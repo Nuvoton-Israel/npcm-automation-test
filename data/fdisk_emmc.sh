@@ -16,7 +16,7 @@ if [ -n "${rs}" ];then
     umount $rs
 fi
 
-# f0833000.udc
+# f0833000.udc, disable UDC
 if [ -d "$mmc_usb" ];then
     reg=`cat ${mmc_usb}/UDC`
     echo > ${mmc_usb}/UDC
@@ -31,8 +31,18 @@ p
 
 w
 EOF
+
+if [ "$?" != "0" ];then
+    echo "fdisk failed"
+    exit 1
+fi
+
 sleep 1
 mke2fs /dev/${mmc_dev}p1 -F
+if [ "$?" != "0" ];then
+    echo "mke2fs failed"
+    exit 1
+fi
 
 if [ ! -d "$temp_mount" ];then
     mkdir $temp_mount
@@ -45,7 +55,7 @@ chmod 777 ${udc_test}
 sleep 1
 umount $temp_mount
 
-
+# Enable UDC
 if [ -d "$mmc_usb" ];then
     echo $reg > ${mmc_usb}/UDC
 fi

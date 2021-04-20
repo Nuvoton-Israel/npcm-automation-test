@@ -27,3 +27,9 @@ ${ALLOW_IGNORE_EMAC}    ${False}
 #${EMAC_IP}          ${EMPTY}
 ${EMAC_IP}          192.168.56.109
 ${IPERF_SERVER}     192.168.56.102
+
+# stress test
+#${STRESS_TIME}      20 minutes
+#${TIMEOUT_TIME}     21 minutes
+${STRESS_TIME}      30 seconds
+${TIMEOUT_TIME}     60 seconds

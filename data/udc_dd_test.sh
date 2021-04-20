@@ -22,7 +22,8 @@ log_stat(){
     minutes_passed="$(($seconds_passed / 60))"
     hours_passed="$(($minutes_passed / 60))"
     log_timestamp="$hours_passed hours $((minutes_passed % 60)) minutes and $(($seconds_passed % 60)) seconds elapsed."
-    echo "$log_timestamp">> $results_log_file
+    echo "$log_timestamp" >> $results_log_file
+    echo "$result_log" >> $results_log_file
 }
 
 if [ -z "$1" ];then

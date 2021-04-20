@@ -41,14 +41,14 @@ CPU Stress Test
 	# 10000000 => run 10 seconds
 	# 500000   => stop and wait 0.5 second
 	Run Stress Test Script And Verify  10000000  500000
-	...  script=${CPU_SCRIPT}  exec_time=30  timeout=60
+	...  script=${CPU_SCRIPT}
 
 RNG Stress Test
 	[Documentation]  Test Random generater by ent tool
 	[Tags]  Stress Test  Onboard RNG
 
 	Run Stress Test Script And Verify
-	...  script=${RNG_SCRIPT}  exec_time=30  timeout=60
+	...  script=${RNG_SCRIPT}
 
 ADC Stress Test
 	[Documentation]  Test ADC by access sysfs
@@ -57,7 +57,7 @@ ADC Stress Test
 	# @{args}:
 	# 4 => use adc 4
 	Run Stress Test Script And Verify  4
-	...  script=${ADC_SCRIPT}  exec_time=30  timeout=60
+	...  script=${ADC_SCRIPT}
 
 Gmac Net Stress Test
 	[Documentation]  Test network by iperf3 via gmac
@@ -75,7 +75,7 @@ Gmac Net Stress Test
 	...  msg= Default test run via gmac, so gmac must be set
 	Run Stress Test Script And Verify  -1  1000  2000
 	...  8  12  350  ${GMAC_IP}  ${IPERF_SERVER}
-	...  script=${Net_SCRIPT}  exec_time=30  timeout=60
+	...  script=${Net_SCRIPT}
 	# kill iperf server after test finish
 	Kill Process By Handle  ${handle}
 	[Teardown]  Kill Process By name    iperf
@@ -103,7 +103,7 @@ Emac Net Stress Test
 	# Set Emac IP address  ${EMAC_IP}
 	Run Stress Test Script And Verify  -1  1000  2000
 	...  8  12  60  ${EMAC_IP}  ${IPERF_SERVER}
-	...  script=${Net_SCRIPT}  exec_time=30  timeout=60
+	...  script=${Net_SCRIPT}
 
 	# kill iperf server after test finish
 	Kill Process By Handle  ${handle}
@@ -134,7 +134,7 @@ FIU Stress Test
 	Log  test folders ${folder} ${tmp_folder}
 	Run Stress Test Script And Verify  -1  4000  8000  2  6
 	...  ${folder}  ${tmp_folder}  2  0
-	...  script=${DD_SCRIPT}  exec_time=30  timeout=60
+	...  script=${DD_SCRIPT}
 	Sleep  3
 	#Unmount Folder  ${folder}
 	[Teardown]  Clean Mounted Folder  ${folder}
@@ -154,7 +154,7 @@ EMMC Stress Test
 	Log  test folders ${folder} ${tmp_folder}
 	Run Stress Test Script And Verify  -1  4000  8000  5  10
 	...  ${folder}  ${tmp_folder}  100  0  0x100000
-	...  script=${DD_SCRIPT}  exec_time=30  timeout=60
+	...  script=${DD_SCRIPT}
 	Sleep  3
 	#Unmount Folder  ${folder}
 	[Teardown]  Clean Mounted Folder  ${folder}
@@ -172,7 +172,7 @@ USB Host Stress Test
 	Log  test folders ${folder} ${tmp_folder}
 	Run Stress Test Script And Verify  -1  4000  8000  5  10
 	...  ${folder}  ${tmp_folder}  100  0  0x100000
-	...  script=${DD_SCRIPT}  exec_time=30  timeout=60
+	...  script=${DD_SCRIPT}
 	Sleep  3
 	Unmount Folder  ${folder}
 	# TODO: read average speed from stat file
@@ -193,7 +193,7 @@ USB Device Stress Test
 	${udc_path}=  Find UDC On PC
 	Log  udc mount point: ${udc_path}
 	Run Stress Test Script And Verify  ${udc_path}
-	...  script=${UDC_SCRIPT}  exec_time=30  timeout=60  bmc=False
+	...  script=${UDC_SCRIPT}  bmc=False
 
 
 *** Keywords ***

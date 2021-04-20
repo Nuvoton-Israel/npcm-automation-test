@@ -25,8 +25,8 @@ client_threshold_bandwidth=$6
 client_address=$7
 client_minimal_bandwidth=10000
 server_minimal_bandwidth=10000
-results_log_file="$BASEDIR/log/net_stress.$8.stat"
-log_file="$BASEDIR/log/net_stress.$8.log"
+results_log_file="$BASEDIR/log/net_stress.$7_$8.stat"
+log_file="$BASEDIR/log/net_stress.$7_$8.log"
 tmp_file="/tmp/net_stress.$8.tmp"
 result_log=PASS
 # iperf2 or iperf3 use different port
@@ -53,11 +53,11 @@ do
 	timeout_time=$(($time+10))
 
 	if [ "$1" -eq -1 ]; then
-		iperf_cmd="/bin/busybox timeout $timeout_time $IPERF -c $8 -t$time -f m -B $7"
+		iperf_cmd="/bin/busybox timeout $timeout_time $IPERF -c $8 -t$time -i2 -f m -B $7"
 		#iperf_cmd="/usr/tests/iperf_arm -c $8 -t$time -d -f 'm'"
 	else
 		#iperf_cmd="taskset $1 /usr/tests/iperf_arm -c $8 -t$time -d -f 'm'"
-		iperf_cmd="/bin/busybox timeout $timeout_time taskset $1 $IPERF -c $8 -t$time -d -f m -B $7"
+		iperf_cmd="/bin/busybox timeout $timeout_time taskset $1 $IPERF -c $8 -t$time -i2 -d -f m -B $7"
 	fi
 
 	#echo dbg: iperf_cmd=$iperf_cmd

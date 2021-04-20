@@ -6,6 +6,7 @@ Library		gen_cmd.py
 Library		SCPLibrary    WITH NAME   scp
 Library		String
 Library		OperatingSystem
+Library		DateTime
 Resource	resource.robot
 
 
@@ -56,7 +57,8 @@ Setup Monitor
     # Description of argument(s):
     # ${exec_time}  the executing time
     # ${bmc}        set up timer on bmc or PC when set False
-    ${cmd}=  Set Variable  sleep ${exec_time} && touch /tmp/stop_stress_test
+    ${exec_time_sec}=  Convert Time  ${exec_time}
+    ${cmd}=  Set Variable  sleep ${exec_time_sec} && touch /tmp/stop_stress_test
     # run keywords need "AND" to separate echo KW+ARGs
     Run Keyword If  ${bmc}  Run Keywords
     ...    BMC Execute Command  rm -f /tmp/stop_stress_test  AND
@@ -68,7 +70,8 @@ Setup Monitor
 
 Run Stress Test Script And Verify
     [Documentation]  run stress test script and check result
-    [Arguments]  @{args}  ${script}  ${exec_time}  ${timeout}  ${bmc}=True
+    [Arguments]  @{args}  ${script}  ${exec_time}=${STRESS_TIME}
+    ...  ${timeout}=${TIMEOUT_TIME}  ${bmc}=True
     [Timeout]    ${timeout}
 
     # Description of argument(s):
