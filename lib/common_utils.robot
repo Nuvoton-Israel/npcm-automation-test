@@ -169,7 +169,7 @@ Mount USB Folder
     Log  Mount point: ${folder}
     Clean Mounted Folder    ${folder}
     BMC Execute Command    mkdir -vp ${folder}  ignore_err=${1}
-    ${cmd}=  Catenate  mount -t vfat /dev/${device}  ${folder}
+    ${cmd}=  Catenate  mount -t ext4 /dev/${device}  ${folder}
     BMC Execute Command  ${cmd}
     [Return]  ${folder}
 
@@ -270,7 +270,11 @@ Check Fail In State File
     ${cmd}=  Set Variable  cat ${stat_file} | grep -o failed.* | awk '{print $2}'
     ${failed_count}  ${stderr}  ${rc}=
     ...  BMC Execute Command  cmd_buf=${cmd}
-    Should Be Equal  ${failed_count}  0  msg=failed count must be zero
+    ${err_msg}=  Set Variable  'failed count must be zero'
+    ${msg}=  Set Variable IF  "${stderr}" != "${EMPTY}"
+    ...  ${err_msg}, error: ${stderr}
+    ...  ${err_msg}
+    Should Be Equal  ${failed_count}  0  msg=${msg}
 
 Set Emac IP address
     [Documentation]  Set up emac IP address via SSH from gamc

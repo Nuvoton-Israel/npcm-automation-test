@@ -14,6 +14,7 @@ ${Net_SCRIPT}		net_test.sh
 ${DD_SCRIPT}		dd_test.sh
 ${ADC_SCRIPT}		adc_test.sh
 ${UDC_SCRIPT}		udc_dd_test.sh
+${I2C_SCRIPT}		i2c_slave_eeprom.sh
 ${ignore_err}		${0}
 
 *** Test Cases ***
@@ -161,7 +162,7 @@ EMMC Stress Test
 
 USB Host Stress Test
 	[Documentation]  Test USB host by read write USB mass storage
-	[Tags]  Stress Test  Storage  USB
+	[Tags]  Stress Test  Storage  USB  UDC
 
 	# @{args}:
 	# example -1  4000  8000  5  10  /mnt/usb/p1   /tmp/usb/p1  100  0
@@ -177,6 +178,23 @@ USB Host Stress Test
 	Unmount Folder  ${folder}
 	# TODO: read average speed from stat file
 
+I2C Slave EEPROM Stress Test
+	[Documentation]  Test I2C master and slave as EEPROM
+	[Tags]  Stress Test  I2C  EEPROM
+	# In this test, we probe a I2C slave EEPROM on one I2C bus, and connect
+	# it to another I2C bus as master. Then perform read/write data, also
+	# compare data is mached or not.
+
+	# copy test binary to DUT
+	Copy Data To BMC  ${DIR_SCRIPT}/i2c_slave_rw  /tmp
+	# @{args}:
+	# I2C bus as master,  2
+	# I2C bus as slave,   1
+	# I2C eeprom address, 0x64
+
+	Run Stress Test Script And Verify  2  1  0x64
+	...  script=${I2C_SCRIPT}
+
 Test Hello World
 	[Documentation]  Hello world
 	[Tags]  Hello
@@ -185,15 +203,16 @@ Test Hello World
 	${exec}=  Set Variable  Shell Cmd
 	Run Keyword  ${exec}  ls
 
-USB Device Stress Test
-	[Documentation]  Test USB device by binding eMMC as USB mass storage
-	[Tags]  Stress Test  Storage  USB  UDC
+# We Connect DUT USB host and USB client, so we don't need test client again
+# USB Device Stress Test
+# 	[Documentation]  Test USB device by binding eMMC as USB mass storage
+# 	[Tags]  Stress Test  Storage  USB  UDC
 
-	# confirm test PC connect the UDC mass storage
-	${udc_path}=  Find UDC On PC
-	Log  udc mount point: ${udc_path}
-	Run Stress Test Script And Verify  ${udc_path}
-	...  script=${UDC_SCRIPT}  bmc=False
+# 	# confirm test PC connect the UDC mass storage
+# 	${udc_path}=  Find UDC On PC
+# 	Log  udc mount point: ${udc_path}
+# 	Run Stress Test Script And Verify  ${udc_path}
+# 	...  script=${UDC_SCRIPT}  bmc=False
 
 
 *** Keywords ***

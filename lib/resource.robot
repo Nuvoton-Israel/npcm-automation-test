@@ -18,7 +18,7 @@ ${NET_STAT}         net_stress
 ${SPI_DEV}          mtdblock8
 ${MMC_DEV}          mmcblk0p1
 ${USB_DEV}          sda1  # the USB mass storage on DUT
-${UDC_DEV}          sdc1  # the USB mass storage on PC
+${UDC_DEV}          sdb1  # the USB mass storage on PC
 
 # net test
 ${GMAC_IP}          ${OPENBMC_HOST}
