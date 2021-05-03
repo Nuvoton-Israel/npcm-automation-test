@@ -1,8 +1,10 @@
 *** Settings ***
 Documentation	Basic function test for nuvoton chips
-Resource	lib/common_utils.robot
+Resource	lib/test_utils.robot
 Resource	lib/resource.robot
+Resource	lib/log_collector.robot
 Suite Setup		Run Keywords  Create Log Folder  Check DUT Environment
+Test Teardown   Collect Log On Test Case Fail
 
 *** Variables ***
 # test scripts
@@ -202,6 +204,7 @@ Test Hello World
 	Log  Hello world!
 	${exec}=  Set Variable  Shell Cmd
 	Run Keyword  ${exec}  ls
+	# Fail
 
 # We Connect DUT USB host and USB client, so we don't need test client again
 # USB Device Stress Test

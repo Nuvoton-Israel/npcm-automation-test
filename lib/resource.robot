@@ -1,9 +1,16 @@
+*** Settings ***
+Variables           variables.py
+
 *** Variables ***
-${SSH_PORT}             22
-${HELLO_MESSAGE}        Hello, world!
-${OPENBMC_HOST}         192.168.56.130
-${OPENBMC_USERNAME}     root
-${OPENBMC_PASSWORD}     0penBmc
+${SSH_PORT}            22
+${HELLO_MESSAGE}       Hello, world!
+${DBUS_PREFIX}         ${EMPTY}
+${OPENBMC_HOST}        192.168.56.130
+${AUTH_URI}            https://${OPENBMC_HOST}${AUTH_SUFFIX}
+${OPENBMC_USERNAME}    root
+${OPENBMC_PASSWORD}    0penBmc
+${REST_USERNAME}       root
+${REST_PASSWORD}       0penBmc
 
 # test scripts
 ${DIR_SCRIPT}       data

@@ -1,6 +1,6 @@
 *** Settings ***
 Documentation	Format eMMC tool
-Resource	lib/common_utils.robot
+Resource	lib/test_utils.robot
 Resource	lib/resource.robot
 Suite Setup		Check DUT Environment
 
