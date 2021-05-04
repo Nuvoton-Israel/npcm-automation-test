@@ -1,7 +1,7 @@
 #!/bin/bash
 #set -e
 
-# HW set up 
+# HW set up
 : << END
 PWM0 => TACH0, TACH8~11
 PWM1 => TACH1, TACH12~15
@@ -31,6 +31,31 @@ PWM7_GPIO18 => TACH7_GPIO60
 END
 devmem=/sbin/devmem
 
+# functions
+compare_rpm(){
+    # remove ./fan?_input
+    res=`echo $@ | grep -Eo " [0-9]+"`
+    i=0
+    for rpm in $res;
+    do
+        if [ "${res_data[$i]}" != "$rpm" ];then
+            echo $msg >&2  # echo current status to stderr for get more clear infomation
+            echo "data is wrong:${rpm} != ${res_data[$i]}, at index ${i}" >&2
+            err=$(( err + 1 ))
+        fi
+        i=$(( i + 1))
+    done
+    if [ "$err" != "0" ];then
+        exit $err
+    fi
+}
+
+# global vars
+res1_data=(3054 3054 3054 3054 3054 3054 3054 3054 3054 3054 3054 3054 3054 3054 3054 3054)
+res2_data=(1533 1533 1533 1533 3054 3054 3054 3054 1533 1533 1533 1533 1533 1533 1533 1533)
+res3_data=(3067 3067 3067 3067 1533 1533 1533 1533 3067 3067 3067 3067 3067 3067 3067 3067)
+err=0
+
 # do not report error if stop pid service failed or cannot find it
 set +e
 # lazy part for some DUT (not real for test)
@@ -54,7 +79,8 @@ echo 125 > pwm7
 echo 125 > pwm8
 
 # set clock to about 100HZ
-echo "3000 RPM test"
+msg="3000 RPM test"
+echo $msg
 ${devmem} 0xf0103004 w 0x00003333
 ${devmem} 0xf0104004 w 0x00003333
 
@@ -64,7 +90,9 @@ ${devmem} 0xf0104000 w 0x00007777
 sleep 1
 # here all fans reading should be 3054
 # cat cat fan* to show
-find . -name "fan*" -exec echo -en "{}\t" \; -exec cat {} \; |sort -V
+fan_rpms=`find . -name "fan*" -exec echo -en "{}\t" \; -exec cat {} \; |sort -V`
+res_data=( ${res1_data[@]} )
+compare_rpm $fan_rpms
 sleep 1
 # ./fan1_input    3054
 # ./fan2_input    3054
@@ -84,10 +112,13 @@ sleep 1
 # ./fan16_input   3054
 
 # set PWM PPR ch 01 and 23 to 0xEE, RPM 1533
-echo "1533 RPM test part1"
+msg="1533 RPM test part1"
+echo $msg
 ${devmem} 0xf0103000 w 0x0000eeee
 sleep 1
-find . -name "fan*" -exec echo -en "{}\t" \; -exec cat {} \; |sort -V
+fan_rpms=`find . -name "fan*" -exec echo -en "{}\t" \; -exec cat {} \; |sort -V`
+res_data=( ${res2_data[@]} )
+compare_rpm $fan_rpms
 sleep 1
 # ./fan1_input    1533
 # ./fan2_input    1533
@@ -105,12 +136,14 @@ sleep 1
 # ./fan14_input   1533
 # ./fan15_input   1533
 # ./fan16_input   1533
-
-echo "1533 RPM test part2 and 3067 RPM"
+msg="1533 RPM test part2 and 3067 RPM"
+echo $msg
 $devmem 0xf0104000 w 0x0000eeee
 $devmem 0xf0103004 w 0x00002222
 sleep 1
-find . -name "fan*" -exec echo -en "{}\t" \; -exec cat {} \; |sort -V
+fan_rpms=`find . -name "fan*" -exec echo -en "{}\t" \; -exec cat {} \; |sort -V`
+res_data=( ${res3_data[@]} )
+compare_rpm $fan_rpms
 sleep 1
 # ./fan1_input    3067
 # ./fan2_input    3067

@@ -3,7 +3,7 @@ Documentation	Basic function test for nuvoton chips
 Resource	lib/test_utils.robot
 Resource	lib/resource.robot
 Resource	lib/log_collector.robot
-Suite Setup		Run Keywords  Create Log Folder  Check DUT Environment
+Suite Setup		Check DUT Environment
 Test Teardown   Collect Log On Test Case Fail
 
 *** Variables ***
@@ -227,7 +227,7 @@ Test Script And Verify
     # Description of argument(s):
     # ${script}    test script path
 
-    Copy Data To BMC  ${DIR_SCRIPT}/${script}    /tmp
+    Copy Data To BMC  ${DIR_SCRIPT}/${BOARD}/${script}    /tmp
     ${stdout}  ${stderr}  ${rc}=
     ...  BMC Execute Command  /bin/bash /tmp/${script}
     Should Be Empty  ${stderr}

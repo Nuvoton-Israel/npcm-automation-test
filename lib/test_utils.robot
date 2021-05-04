@@ -23,10 +23,11 @@ Copy Data To BMC
     [Documentation]  Copy data to BMC
     [Arguments]  ${source}  ${dest}
 
+    OperatingSystem.File Should Exist  ${source}
     Open Connection for SCP
     Log    Copying ${source} to ${dest}
     scp.Put File    ${source}    ${dest}
-    Close Connection
+    scp.Close Connection
 
 Run Script With Args On BMC
     [Documentation]  run script with arguments on BMC
@@ -134,11 +135,6 @@ Kill Process By name
     Log  kill process: ${pids}
     OperatingSystem.Run  kill -9 ${pids}
 
-
-Create Log Folder
-    [Documentation]  create log folder for stress test access
-
-    BMC Execute Command  mkdir -v ${DIR_STAT}  ignore_err=${1}
 
 Mount SPI Folder
     [Documentation]  mount SPI flash to folder
@@ -289,10 +285,12 @@ Set Emac IP address
 
 
 Check DUT Environment
-	[Documentation]  check DUT image contains necessary tools
+    [Documentation]  check DUT image contains necessary tools
 
-	# BMC Execute Command  env  print_out=${1}
-	${cmd}=  Catenate  PATH=$PATH:/usr/sbin:/sbin which   @{TEST_TOOLS}
-	${stdout}  ${stderr}  ${rc}=
+    # prepare state file folder
+    BMC Execute Command  mkdir -v ${DIR_STAT}  ignore_err=${1}
+    # BMC Execute Command  env  print_out=${1}
+    ${cmd}=  Catenate  PATH=$PATH:/usr/sbin:/sbin which   @{TEST_TOOLS}
+    ${stdout}  ${stderr}  ${rc}=
     ...  BMC Execute Command  ${cmd}  print_out=${0}
-	Should Be Equal    ${rc}    ${0}
+    Should Be Equal    ${rc}    ${0}

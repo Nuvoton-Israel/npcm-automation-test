@@ -63,6 +63,11 @@ Collect Log On Test Case Fail
     [Documentation]  Log collector entry point, from OpenBMC_ffdc.
     [Arguments]  ${clean_up}=${TRUE}
 
+    Run Keyword If  '${ENABLE_LOG_COLLECT}' == '${False}'
+    ...  Run Keywords
+    ...    Log  Skip collect log because we just want to run test cases
+    ...    AND  Return From Keyword
+
     Run Keyword If  '${TEST_STATUS}' == 'FAIL'  Run Collect Log
     Log Test Case Status
 

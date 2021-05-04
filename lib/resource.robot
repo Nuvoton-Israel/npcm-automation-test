@@ -14,6 +14,11 @@ ${REST_PASSWORD}       0penBmc
 
 # test scripts
 ${DIR_SCRIPT}       data
+# Note, currently no test case depend on platform architecture
+${PLATFORM}         poleg
+# choose board as arbel-evb, unit test is depend on baord,
+# but stress test does not
+${BOARD}            buv-runbmc
 ${DIR_STAT}         /tmp/log
 @{TEST_TOOLS}       timeout  ent  iperf3  wr_perf_test  rd_perf_test
                     ...  cc_dry2  i2cdetect  i2cset  i2cget  i2ctransfer
@@ -40,3 +45,5 @@ ${IPERF_SERVER}     192.168.56.102
 #${TIMEOUT_TIME}     21 minutes
 ${STRESS_TIME}      30 seconds
 ${TIMEOUT_TIME}     60 seconds
+
+${ENABLE_LOG_COLLECT}   ${False}
