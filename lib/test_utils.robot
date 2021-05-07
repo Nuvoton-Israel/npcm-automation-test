@@ -8,6 +8,7 @@ Library		String
 Library		OperatingSystem
 Library		DateTime
 Resource	resource.robot
+Resource	ssh_utils.robot
 
 
 *** Keywords ***
@@ -101,6 +102,12 @@ Start Iperf Server
     Should Be True    ${popen.returncode} is ${None}
     [Return]  ${popen}
 
+Start Remote Iperf Server
+    [Documentation]  run iperf3 on remote PC
+
+    PC Execute Command  iperf3 -s      fork=${1}
+    ...  ip=${IPERF_SERVER}  user=${IPERF_USER}  passwd=${IPERF_PASSWD}
+
 Kill Process By Handle
     [Documentation]  kill process by popen handle object
     [Arguments]  ${popen}
@@ -109,17 +116,6 @@ Kill Process By Handle
     # @{popen}      the popen object created by fork subprocess
 
     ${shell_rc}=  Kill Cmd  popen=${popen}
-
-Kill Process
-    [Documentation]  kill process by pid
-    [Arguments]  @{pids}
-
-    # Description of argument(s):
-    # @{pids}       the pid we want to kill
-
-    ${pid_list}=  Catenate  @{pids}
-    ${shell_rc}  ${stdout}=  Shell Cmd  kill -s SIGTERM ${pid_list}
-    Should Be Equal    ${shell_rc}    ${0}
 
 Kill Process By name
     [Documentation]  kill process by process name
@@ -135,6 +131,17 @@ Kill Process By name
     Log  kill process: ${pids}
     OperatingSystem.Run  kill -9 ${pids}
 
+PC Kill Process By name
+    [Documentation]  kill process by process name on remote PC
+    [Arguments]  ${name}
+
+    # Description of argument(s):
+    # ${name}       the process name we want to kill
+
+    ${cmd}=  Catenate  pkill -9 -e iperf
+    ${stdout}  ${stderr}  ${rc}=
+    ...  PC Execute Command  ${cmd}  ip=${IPERF_SERVER}
+    ...    user=${IPERF_USER}  passwd=${IPERF_PASSWD}  ignore_err=${1}
 
 Mount SPI Folder
     [Documentation]  mount SPI flash to folder
@@ -283,14 +290,32 @@ Set Emac IP address
     Sleep  5
     Wait For Host To Ping  ${ip_address}
 
+Enable Ethernet Interface
+    [Documentation]  disalbe ethernet interface to aviod test result error
+    [Arguments]  ${eth}  ${enable}
+
+    # Description of argument(s):
+    # ${eth}        the ethernet interface
+    # ${enable}     enable or set false to disable ethernet interface
+
+    SSHLibrary.Close All Connections
+    Sleep  3
+    ${cmd}=  Run Keyword If  '${enable}' == '${True}'
+    ...    Catenate  /sbin/ifconfig   ${eth}   up
+    ...  ELSE
+    ...    Catenate  /sbin/ifconfig   ${eth}   down
+    BMC Execute Command  ${cmd}
 
 Check DUT Environment
     [Documentation]  check DUT image contains necessary tools
 
+    # check board setting first
+    Should Contain  ${BOARD_SUPPORTED}  ${BOARD}
+    ...  msg=board:${BOARD} is not supported
     # prepare state file folder
-    BMC Execute Command  mkdir -v ${DIR_STAT}  ignore_err=${1}
+    BMC Execute Command  mkdir -v ${DIR_STAT}  ignore_err=${1}  time_out=${10}
     # BMC Execute Command  env  print_out=${1}
     ${cmd}=  Catenate  PATH=$PATH:/usr/sbin:/sbin which   @{TEST_TOOLS}
     ${stdout}  ${stderr}  ${rc}=
-    ...  BMC Execute Command  ${cmd}  print_out=${0}
+    ...  BMC Execute Command  ${cmd}  print_out=${0}  time_out=${10}
     Should Be Equal    ${rc}    ${0}

@@ -1,5 +1,5 @@
 *** Settings ***
-Variables           variables.py
+Variables           ../data/load_var.py
 
 *** Variables ***
 ${SSH_PORT}            22
@@ -19,6 +19,7 @@ ${PLATFORM}         poleg
 # choose board as arbel-evb, unit test is depend on baord,
 # but stress test does not
 ${BOARD}            buv-runbmc
+@{BOARD_SUPPORTED}  buv-runbmc  arbel-evb
 ${DIR_STAT}         /tmp/log
 @{TEST_TOOLS}       timeout  ent  iperf3  wr_perf_test  rd_perf_test
                     ...  cc_dry2  i2cdetect  i2cset  i2cget  i2ctransfer
@@ -39,6 +40,10 @@ ${ALLOW_IGNORE_EMAC}    ${False}
 #${EMAC_IP}          ${EMPTY}
 ${EMAC_IP}          192.168.56.109
 ${IPERF_SERVER}     192.168.56.102
+${IPERF_USER}       ${EMPTY}
+${IPERF_PASSWD}     ${EMPTY}
+${GMAC_THR}         350  # pass stree test min MB/s
+${EMAC_THR}         60
 
 # stress test
 #${STRESS_TIME}      20 minutes

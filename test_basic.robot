@@ -66,7 +66,11 @@ Gmac Net Stress Test
 	[Documentation]  Test network by iperf3 via gmac
 	[Tags]  Stress Test  Network  Onboard  Gmac
 
-	${handle}=  Start Iperf Server
+	Start Remote Iperf Server
+	Should Not Be Empty  ${GMAC_IP}
+	...  msg= Default test run via gmac, so gmac must be set
+	# disable eth0 to avoid getting confused result
+	Enable Ethernet Interface  eth0  ${False}
 	# @{args}:
 	# -1 => unlimt execute
 	# [1000 2000] => the test delay ms range
@@ -74,14 +78,12 @@ Gmac Net Stress Test
 	# 400 => the minimal speed (MBits/S) to pass test
 	# GMAC_IP => run iperf with bind this IP
 	# IPERF_SERVER  => the iperf server IP address
-	Should Not Be Empty  ${GMAC_IP}
-	...  msg= Default test run via gmac, so gmac must be set
 	Run Stress Test Script And Verify  -1  1000  2000
-	...  8  12  350  ${GMAC_IP}  ${IPERF_SERVER}
+	...  8  12  ${GMAC_THR}  ${GMAC_IP}  ${IPERF_SERVER}
 	...  script=${Net_SCRIPT}
+	Enable Ethernet Interface  eth0  ${True}
 	# kill iperf server after test finish
-	Kill Process By Handle  ${handle}
-	[Teardown]  Kill Process By name    iperf
+	[Teardown]  PC Kill Process By name    iperf
 
 Emac Net Stress Test
 	[Documentation]  Test network by iperf3 via emac
@@ -93,7 +95,14 @@ Emac Net Stress Test
 	...  Pass Execution
 	...    message=Ignore Emac test because allow ignore test it
 
-	${handle}=  Start Iperf Server
+	Start Remote Iperf Server
+	Should Not Be Empty  ${EMAC_IP}
+	...  msg= IP address must set
+	Set Emac IP address  ${EMAC_IP}
+	SSHLibrary.Close All Connections
+	${OPENBMC_HOST} =  Set Global Variable  ${EMAC_IP}
+	# TODO: dynamic change BMC IP address may not stable...
+	#Enable Ethernet Interface  eth1  ${False}
 	# @{args}:
 	# -1 => unlimt execute
 	# [1000 2000] => the test delay ms range
@@ -101,16 +110,15 @@ Emac Net Stress Test
 	# 60 => the minimal speed (MBits/S) to pass test
 	# EMAC_IP => run iperf with bind this IP
 	# IPERF_SERVER  => the iperf server IP address
-	Should Not Be Empty  ${EMAC_IP}
-	...  msg= IP address must set
-	# Set Emac IP address  ${EMAC_IP}
 	Run Stress Test Script And Verify  -1  1000  2000
-	...  8  12  60  ${EMAC_IP}  ${IPERF_SERVER}
+	...  8  12  ${EMAC_THR}  ${EMAC_IP}  ${IPERF_SERVER}
 	...  script=${Net_SCRIPT}
 
+	#Enable Ethernet Interface  eth1  ${True}
+	SSHLibrary.Close All Connections
+	${OPENBMC_HOST} =  Set Global Variable  ${GMAC_IP}
 	# kill iperf server after test finish
-	Kill Process By Handle  ${handle}
-	[Teardown]  Kill Process By name    iperf
+	[Teardown]  PC Kill Process By name    iperf
 
 
 FIU Stress Test
@@ -205,6 +213,7 @@ Test Hello World
 	${exec}=  Set Variable  Shell Cmd
 	Run Keyword  ${exec}  ls
 	# Fail
+	Log  ${BOARD_TEST_MSG}  console=${True}
 
 # We Connect DUT USB host and USB client, so we don't need test client again
 # USB Device Stress Test

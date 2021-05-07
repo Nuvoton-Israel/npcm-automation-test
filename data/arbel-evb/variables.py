@@ -1,0 +1,1 @@
+BOARD_TEST_MSG = "hallo arble-evb"

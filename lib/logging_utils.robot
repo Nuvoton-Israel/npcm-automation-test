@@ -3,8 +3,6 @@ Documentation    Error logging utility keywords.
 
 Resource        rest_client.robot
 Resource	    common_utils.robot
-Variables       variables.py
-
 
 *** Variables ***
 # Define variables for use by callers of 'Get Error Logs'.
