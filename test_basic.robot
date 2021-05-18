@@ -69,6 +69,7 @@ Gmac Net Stress Test
 	Start Remote Iperf Server
 	Should Not Be Empty  ${GMAC_IP}
 	...  msg= Default test run via gmac, so gmac must be set
+	Set Test Variable  ${TEST_THRESHOLD}  ${GMAC_THR}
 	# disable eth0 to avoid getting confused result
 	Enable Ethernet Interface  eth0  ${False}
 	# @{args}:
@@ -83,7 +84,7 @@ Gmac Net Stress Test
 	...  script=${Net_SCRIPT}
 	Enable Ethernet Interface  eth0  ${True}
 	# kill iperf server after test finish
-	[Teardown]  PC Kill Process By name    iperf
+	[Teardown]  Net Test Teardown
 
 Emac Net Stress Test
 	[Documentation]  Test network by iperf3 via emac
@@ -118,7 +119,7 @@ Emac Net Stress Test
 	SSHLibrary.Close All Connections
 	${OPENBMC_HOST} =  Set Global Variable  ${GMAC_IP}
 	# kill iperf server after test finish
-	[Teardown]  PC Kill Process By name    iperf
+	[Teardown]  Net Test Teardown
 
 
 FIU Stress Test
@@ -148,7 +149,7 @@ FIU Stress Test
 	...  script=${DD_SCRIPT}
 	Sleep  3
 	#Unmount Folder  ${folder}
-	[Teardown]  Clean Mounted Folder  ${folder}
+	[Teardown]  Storage Test Teardown  ${folder}
 
 EMMC Stress Test
 	[Documentation]  Test eMMC by read write eMMC partition
@@ -168,7 +169,7 @@ EMMC Stress Test
 	...  script=${DD_SCRIPT}
 	Sleep  3
 	#Unmount Folder  ${folder}
-	[Teardown]  Clean Mounted Folder  ${folder}
+	[Teardown]  Storage Test Teardown  ${folder}
 
 USB Host Stress Test
 	[Documentation]  Test USB host by read write USB mass storage
@@ -185,8 +186,7 @@ USB Host Stress Test
 	...  ${folder}  ${tmp_folder}  100  0  0x100000
 	...  script=${DD_SCRIPT}
 	Sleep  3
-	Unmount Folder  ${folder}
-	# TODO: read average speed from stat file
+	[Teardown]  Storage Test Teardown  ${folder}
 
 I2C Slave EEPROM Stress Test
 	[Documentation]  Test I2C master and slave as EEPROM
@@ -214,6 +214,7 @@ Test Hello World
 	Run Keyword  ${exec}  ls
 	# Fail
 	Log  ${BOARD_TEST_MSG}  console=${True}
+	Set Test Message  Just hello world test case  append=yes
 
 # We Connect DUT USB host and USB client, so we don't need test client again
 # USB Device Stress Test

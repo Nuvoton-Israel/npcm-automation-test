@@ -265,11 +265,13 @@ Check Fail In State File
     [Documentation]  check there is any error while stress test
     [Arguments]  ${stdout}
 
+    Set Test Variable  ${STATE_FILE}  ${EMPTY}
     # find state file from stdout
     ${rc}  ${stat_file}=  Shell Cmd
     ...  echo '${stdout}' | grep Statefile | awk '{print $2}' | tr -d '\n'
     Should Not Be Empty  ${stat_file}
-    Log  "state file: " ${stat_file}
+    Set Test Variable  ${STATE_FILE}  ${stat_file}
+    Log  state file: ${stat_file}
     ${cmd}=  Set Variable  cat ${stat_file} | grep -o failed.* | awk '{print $2}'
     ${failed_count}  ${stderr}  ${rc}=
     ...  BMC Execute Command  cmd_buf=${cmd}
@@ -278,6 +280,65 @@ Check Fail In State File
     ...  ${err_msg}, error: ${stderr}
     ...  ${err_msg}
     Should Be Equal  ${failed_count}  0  msg=${msg}
+
+Get State Speed Information
+    [Documentation]  utility for get speed information from state file
+    [Arguments]  ${file}  ${keyword}
+
+    # Description of argument(s):
+    # ${file}       the state file we want get information
+    # ${keyword}    the speed keyword we want to get
+
+    ${cmd}=  Catenate  cat ${file} |
+    ...  grep -oE "${keyword}.[0-9.]+" | grep -oE "[0-9.]+"
+    ${res}  ${stderr}  ${rc}=
+    ...  BMC Execute Command  cmd_buf=${cmd}  ignore_err=${1}  time_out=${10}
+    ${res}=  Set Variable If  '${rc}' != '${0}'  unknown  ${res}
+    [Return]  ${res}
+
+Get Net Test State information
+    [Documentation]  get net test speed information
+
+    Return From Keyword If  '${STATE_FILE}' == '${EMPTY}'
+    ...  msg=Skip get more information because get state file failed
+
+    ${rms_bandwidth}=  Get State Speed Information  ${STATE_FILE}  rms_bandwidth
+    ${min_bandwidth}=  Get State Speed Information  ${STATE_FILE}  minimal_bandwidth
+    ${test_run}=  Get State Speed Information  ${STATE_FILE}  tests.run
+    ${message}=  Catenate  RMS bandwidth: ${rms_bandwidth},
+    ...  minimal bandwidth: ${min_bandwidth},
+    ...  thredshold: ${TEST_THRESHOLD} Mbits/sec, test runs: ${test_run}
+    Set Test Message  ${message}  append=yes
+
+Net Test Teardown
+    [Documentation]  teardown function for net test
+
+    Get Net Test State information
+    PC Kill Process By name    iperf
+
+Get Storage Test State information
+    [Documentation]  get storage test speed information
+
+    Return From Keyword If  '${STATE_FILE}' == '${EMPTY}'
+    ...  msg=Skip get more information because get state file failed
+    ${rms_write}=  Get State Speed Information  ${STATE_FILE}  rms_write_speed
+    ${min_write}=  Get State Speed Information  ${STATE_FILE}  minimal_write_speed
+    ${rms_read}=  Get State Speed Information  ${STATE_FILE}  rms_read_speed
+    ${min_read}=  Get State Speed Information  ${STATE_FILE}  minimal_read_speed
+    ${test_run}=  Get State Speed Information  ${STATE_FILE}  tests.run
+    ${message}=  Catenate  RMS write: ${rms_write},
+    ...  minimal write: ${min_write}, RMS read: ${rms_read},
+    ...  minimal read: ${min_read} MB/s, test runs: ${test_run}
+    Set Test Message  ${message}  append=yes
+
+Storage Test Teardown
+    [Documentation]  teardown function for storage test
+    [Arguments]  ${folder}
+
+    # Description of argument(s):
+    # ${folder}     the folder mount storage device
+    Clean Mounted Folder  ${folder}
+    Get Storage Test State information
 
 Set Emac IP address
     [Documentation]  Set up emac IP address via SSH from gamc
