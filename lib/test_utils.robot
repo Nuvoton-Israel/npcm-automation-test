@@ -265,7 +265,6 @@ Check Fail In State File
     [Documentation]  check there is any error while stress test
     [Arguments]  ${stdout}
 
-    Set Test Variable  ${STATE_FILE}  ${EMPTY}
     # find state file from stdout
     ${rc}  ${stat_file}=  Shell Cmd
     ...  echo '${stdout}' | grep Statefile | awk '{print $2}' | tr -d '\n'

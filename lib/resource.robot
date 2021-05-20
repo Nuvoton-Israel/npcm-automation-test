@@ -1,5 +1,5 @@
 *** Settings ***
-Variables           ../data/load_var.py
+Variables           ../data/variables.py
 
 *** Variables ***
 ${SSH_PORT}            22

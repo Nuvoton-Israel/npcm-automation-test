@@ -7,7 +7,7 @@ if [ -z "$3" ] ; then
 fi
 
 #initialize  variables
-count=-1
+count=0
 fail=0
 BASEDIR=$(dirname "$0")
 run_start_time=$(date +%s);

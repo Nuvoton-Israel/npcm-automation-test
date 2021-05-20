@@ -3,8 +3,10 @@ Documentation	Basic function test for nuvoton chips
 Resource	lib/test_utils.robot
 Resource	lib/resource.robot
 Resource	lib/log_collector.robot
-Suite Setup		Check DUT Environment
-Test Teardown   Collect Log On Test Case Fail
+Library		lib/load_var_utils.py  WITH NAME  VAR_UTILS
+Suite Setup		Basic Suite Setup
+Test Setup		Set Test Variable  ${STATE_FILE}  ${EMPTY}
+Test Teardown	Collect Log On Test Case Fail
 
 *** Variables ***
 # test scripts
@@ -249,3 +251,16 @@ Test Script And Verify
     Should Be Empty  ${stderr}
     Should Not Be Empty  ${stdout}  msg=Must print information during run script
     Should Be Equal    ${rc}    ${0}
+
+Load Board Variables
+    [Documentation]  load variables by board
+
+	Should Contain  ${BOARD_SUPPORTED}  ${BOARD}
+	...  msg=Not supported board: ${BOARD},
+	VAR_UTILS.Load Vars  data/${BOARD}/variables.py
+
+Basic Suite Setup
+    [Documentation]  this basic test suite setup function
+
+	Load Board Variables
+	Check DUT Environment
