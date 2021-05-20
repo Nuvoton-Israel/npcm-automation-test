@@ -157,6 +157,7 @@ EMMC Stress Test
 
 	# @{args}:
 	# example -1  4000  8000  5  10  /mnt/emmc/p1   /tmp/emmc/p1  100  0
+	# 0x100000 => BS, read/write data each BS at a time
 
 	# Note. we should format and partition flash before mount it!
 	# fdisk /dev/mmcblk0, n, p, 1, \n, \n, w
@@ -195,6 +196,9 @@ I2C Slave EEPROM Stress Test
 	# it to another I2C bus as master. Then perform read/write data, also
 	# compare data is mached or not.
 
+	${msg}=  Set Variable  I2C master and slave bus should not be empty.
+	Should Not Be Empty  ${I2C_MASTER}  msg=${msg}
+	Should Not Be Empty  ${I2C_SALVE}  msg=${msg}
 	# copy test binary to DUT
 	Copy Data To BMC  ${DIR_SCRIPT}/i2c_slave_rw  /tmp
 	# @{args}:
@@ -202,8 +206,10 @@ I2C Slave EEPROM Stress Test
 	# I2C bus as slave,   1
 	# I2C eeprom address, 0x64
 
-	Run Stress Test Script And Verify  2  1  0x64
+	Run Stress Test Script And Verify
+	...  ${I2C_MASTER}  ${I2C_SALVE}  ${I2C_EEPROM_ADDR}
 	...  script=${I2C_SCRIPT}
+	[Teardown]  Simple Get Test State information
 
 Test Hello World
 	[Documentation]  Hello world

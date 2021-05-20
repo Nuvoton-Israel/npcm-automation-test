@@ -12,6 +12,7 @@ if [ -z "$9" ]
 	echo '$7 des /tmp/emmc/p1'
 	echo '$8 Partition size (MB) '
 	echo '$9 1 - full capacity ,  0 - typical capacity'
+	echo '$10 BS setting for test'
 	exit
 fi
 

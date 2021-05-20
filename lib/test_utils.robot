@@ -340,6 +340,14 @@ Storage Test Teardown
     Clean Mounted Folder  ${folder}
     Get Storage Test State information
 
+Simple Get Test State information
+    [Documentation]  get simple test run information
+
+    Return From Keyword If  '${STATE_FILE}' == '${EMPTY}'
+    ...  msg=Skip get more information because get state file failed
+    ${test_run}=  Get State Speed Information  ${STATE_FILE}  tests.run
+    Set Test Message  test runs: ${test_run}  append=yes
+
 Set Emac IP address
     [Documentation]  Set up emac IP address via SSH from gamc
     [Arguments]  ${ip_address}
