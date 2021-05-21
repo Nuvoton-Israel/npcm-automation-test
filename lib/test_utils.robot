@@ -347,20 +347,26 @@ Simple Get Test State information
     ${test_run}=  Get State Speed Information  ${STATE_FILE}  tests.run
     Set Test Message  test runs: ${test_run}  append=yes
 
-Set Emac IP address
-    [Documentation]  Set up emac IP address via SSH from gamc
-    [Arguments]  ${ip_address}
+Set Secondary Interface IP address
+    [Documentation]  Set up IP address via SSH from primary ethernet interface
+    [Arguments]  ${ip_address}  ${interface}
 
-    ${cmd}=  Catenate  /sbin/ifconfig eth0 ${ip_address}
+    # Description of argument(s):
+    # ${ip_address} the ethernet interface IP address
+    # ${interface}  the interface we want to test
+
+    SSHLibrary.Close All Connections
+    ${cmd}=  Catenate  /sbin/ifconfig ${interface} ${ip_address}
     ${stdout}  ${stderr}  ${rc}=
-    ...  BMC Execute Command  ${cmd}  ignore_err=${1}
+    ...  BMC Execute Command  ${cmd}  ignore_err=${1}  time_out=${10}
     Log  rc: ${rc}, out: ${stdout}, err: ${stderr}
     Sleep  5
     Wait For Host To Ping  ${ip_address}
 
 Enable Ethernet Interface
-    [Documentation]  disalbe ethernet interface to aviod test result error
+    [Documentation]  disable ethernet interface to aviod test result error
     [Arguments]  ${eth}  ${enable}
+    [Timeout]  15
 
     # Description of argument(s):
     # ${eth}        the ethernet interface
@@ -372,7 +378,7 @@ Enable Ethernet Interface
     ...    Catenate  /sbin/ifconfig   ${eth}   up
     ...  ELSE
     ...    Catenate  /sbin/ifconfig   ${eth}   down
-    BMC Execute Command  ${cmd}
+    BMC Execute Command  ${cmd}  time_out=${10}
 
 Check DUT Environment
     [Documentation]  check DUT image contains necessary tools
@@ -387,3 +393,47 @@ Check DUT Environment
     ${stdout}  ${stderr}  ${rc}=
     ...  BMC Execute Command  ${cmd}  print_out=${0}  time_out=${10}
     Should Be Equal    ${rc}    ${0}
+
+Net Stress Test
+	[Documentation]  Test network interface by iperf3
+	[Arguments]  ${IP}  ${interface}  ${thredshold}
+
+	# Description of argument(s):
+	# ${IP}         the ethernet interface IP address
+	# ${interface}  the interface we want to test
+	# ${thredshold} the thredshold speed to pass test
+
+	Start Remote Iperf Server
+	Should Not Be Empty  ${IP}
+	...  msg=Network interface IP cannot be empty.
+	Set Test Variable  ${TEST_THRESHOLD}  ${thredshold}
+	# disable secondary interfaces to avoid getting confused result
+	@{disable_interfaces}=  Create List
+	FOR  ${eth}  IN  @{NET_SECONDARY_INTF}
+		Run Keyword If  '${eth}' != '${interface}'
+		...  Append To List  ${disable_interfaces}  ${eth}
+	END
+	Log  disable interfaces: ${disable_interfaces}  console=${True}
+	FOR  ${eth}  IN  @{disable_interfaces}
+		Enable Ethernet Interface  ${eth}  ${False}
+	END
+	# set up IP address if not primary interface
+	# Note: if not real connect eth to network, this action may cause
+	# whole bmc connection hang, restart service systemd-networkd
+	# to solve it.
+	Run Keyword If  '${NET_PRIMARY_INTF}' != '${interface}'
+	...  Set Secondary Interface IP address  ${IP}  ${interface}
+
+	# @{args}:
+	# -1 => unlimt execute
+	# [1000 2000] => the test delay ms range
+	# [8 12] => the test execute second range
+	# 400 => the minimal speed (MBits/S) to pass test
+	# RGMII_IP => run iperf with bind this IP
+	# IPERF_SERVER  => the iperf server IP address
+	Run Stress Test Script And Verify  -1  1000  2000
+	...  8  12  ${thredshold}  ${IP}  ${IPERF_SERVER}
+	...  script=${Net_SCRIPT}
+	FOR  ${eth}  IN  @{disable_interfaces}
+		Enable Ethernet Interface  ${eth}  ${True}
+	END

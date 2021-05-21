@@ -25,9 +25,6 @@ ${DIR_STAT}         /tmp/log
                     ...  cc_dry2  i2cdetect  i2cset  i2cget  i2ctransfer
                     ...  head  tr  awk  cut  sed  md5sum  taskset
                     ...  fdisk  mke2fs  sleep
-${CPU_STAT}         cpu_stress
-${RNG_STAT}         rng_stress
-${NET_STAT}         net_stress
 ${SPI_DEV}          mtdblock8
 ${MMC_DEV}          mmcblk0p1
 ${USB_DEV}          sda1  # the USB mass storage on DUT
@@ -37,16 +34,19 @@ ${I2C_SALVE}        ${EMPTY}  # the i2c slave bus
 ${I2C_EEPROM_ADDR}  0x64
 
 # net test
-${GMAC_IP}          ${OPENBMC_HOST}
-${ALLOW_IGNORE_EMAC}    ${False}
-# if not real connect to EMAC, set EMAC to EMPTY
-#${EMAC_IP}          ${EMPTY}
-${EMAC_IP}          192.168.56.109
+#${ALLOW_IGNORE_SECONDARY}    ${False}
+${ALLOW_IGNORE_SECONDARY}    ${True}
 ${IPERF_SERVER}     192.168.56.102
 ${IPERF_USER}       ${EMPTY}
 ${IPERF_PASSWD}     ${EMPTY}
-${GMAC_THR}         350  # pass stree test min MB/s
-${EMAC_THR}         60
+${NET_PRIMARY_IP}       ${OPENBMC_HOST}
+# Please set up these variables under ${BOARD}/variables.py
+${NET_PRIMARY_INTF}     ${EMPTY}
+${NET_PRIMARY_THR}      ${EMPTY}  # pass stree test min MB/s
+# If not real connect to secondary interface, leave IP to EMPTY
+@{NET_SECONDARY_IP}
+@{NET_SECONDARY_INTF}   # the network secondary interfaces
+@{NET_SECONDARY_THR}
 
 # stress test
 #${STRESS_TIME}      20 minutes

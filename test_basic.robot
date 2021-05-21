@@ -64,65 +64,32 @@ ADC Stress Test
 	Run Stress Test Script And Verify  4
 	...  script=${ADC_SCRIPT}
 
-Gmac Net Stress Test
-	[Documentation]  Test network by iperf3 via gmac
-	[Tags]  Stress Test  Network  Onboard  Gmac
+Primary Interface Net Stress Test
+	[Documentation]  Test network by iperf3 via RGMII
+	[Tags]  Stress Test  Network  Onboard  Gmac  RGMII  eth1
 
-	Start Remote Iperf Server
-	Should Not Be Empty  ${GMAC_IP}
-	...  msg= Default test run via gmac, so gmac must be set
-	Set Test Variable  ${TEST_THRESHOLD}  ${GMAC_THR}
-	# disable eth0 to avoid getting confused result
-	Enable Ethernet Interface  eth0  ${False}
-	# @{args}:
-	# -1 => unlimt execute
-	# [1000 2000] => the test delay ms range
-	# [8 12] => the test execute second range
-	# 400 => the minimal speed (MBits/S) to pass test
-	# GMAC_IP => run iperf with bind this IP
-	# IPERF_SERVER  => the iperf server IP address
-	Run Stress Test Script And Verify  -1  1000  2000
-	...  8  12  ${GMAC_THR}  ${GMAC_IP}  ${IPERF_SERVER}
-	...  script=${Net_SCRIPT}
-	Enable Ethernet Interface  eth0  ${True}
+	Net Stress Test  ${NET_PRIMARY_IP}  ${NET_PRIMARY_INTF}  ${NET_PRIMARY_THR}
 	# kill iperf server after test finish
 	[Teardown]  Net Test Teardown
 
-Emac Net Stress Test
-	[Documentation]  Test network by iperf3 via emac
-	[Tags]  Stress Test  Network  Onboard  Emac
+RMII Net Stress Test
+	[Documentation]  Test network by iperf3 via RMII
+	[Tags]  Stress Test  Network  Onboard  Emc  RMII  eth0
 
-	# run test if EMAC IP not empty or cannot ignore this test
-	Run Keyword If
-	...  ${ALLOW_IGNORE_EMAC} and '${EMAC_IP}' == '${EMPTY}'
-	...  Pass Execution
-	...    message=Ignore Emac test because allow ignore test it
-
-	Start Remote Iperf Server
-	Should Not Be Empty  ${EMAC_IP}
-	...  msg= IP address must set
-	Set Emac IP address  ${EMAC_IP}
-	SSHLibrary.Close All Connections
-	${OPENBMC_HOST} =  Set Global Variable  ${EMAC_IP}
-	# TODO: dynamic change BMC IP address may not stable...
-	#Enable Ethernet Interface  eth1  ${False}
-	# @{args}:
-	# -1 => unlimt execute
-	# [1000 2000] => the test delay ms range
-	# [8 12] => the test execute second range
-	# 60 => the minimal speed (MBits/S) to pass test
-	# EMAC_IP => run iperf with bind this IP
-	# IPERF_SERVER  => the iperf server IP address
-	Run Stress Test Script And Verify  -1  1000  2000
-	...  8  12  ${EMAC_THR}  ${EMAC_IP}  ${IPERF_SERVER}
-	...  script=${Net_SCRIPT}
-
-	#Enable Ethernet Interface  eth1  ${True}
-	SSHLibrary.Close All Connections
-	${OPENBMC_HOST} =  Set Global Variable  ${GMAC_IP}
-	# kill iperf server after test finish
+	Secondary Interface Net Stress Test
+	...  @{NET_SECONDARY_IP}[0]  @{NET_SECONDARY_INTF}[0]  @{NET_SECONDARY_THR}[0]
 	[Teardown]  Net Test Teardown
 
+SGMII Net Stress Test
+	[Documentation]  Test network by iperf3 via SGMII
+	[Tags]  Stress Test  Network  Onboard  Emc  SGMII  eth3
+
+	${length}=  Get Length  ${NET_SECONDARY_INTF}
+	Pass Execution If  ${length} < 2
+	...  This board:${BOARD} does not support SGMII test, just ignore.
+	Secondary Interface Net Stress Test
+	...  @{NET_SECONDARY_IP}[1]  @{NET_SECONDARY_INTF}[1]  @{NET_SECONDARY_THR}[1]
+	[Teardown]  Net Test Teardown
 
 FIU Stress Test
 	[Documentation]  Test FIU by read write SPI flash
@@ -264,3 +231,19 @@ Basic Suite Setup
 
 	Load Board Variables
 	Check DUT Environment
+
+Secondary Interface Net Stress Test
+    [Documentation]  run ethernet secondary interface test
+    [Arguments]  ${IP}  ${interface}  ${thredshold}
+
+    # Description of argument(s):
+    # ${IP}         the ethernet interface IP address
+    # ${interface}  the interface we want to test
+    # ${thredshold} the thredshold speed to pass test
+
+    # run test if interface IP not empty or cannot ignore this test
+    Run Keyword If
+    ...  ${ALLOW_IGNORE_SECONDARY} and '${IP}' == '${EMPTY}'
+    ...  Pass Execution
+    ...    message=Ignore secondary interface test because allow to ignore test it
+    Net Stress Test  ${IP}  ${interface}  ${thredshold}
