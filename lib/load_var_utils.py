@@ -15,5 +15,10 @@ def load_vars(var_path):
             # we get name as ${name} here from importer, remove it!
             _vars[name[2:-1]] = value
             builtin.set_global_variable(name, value)
+        elif type(value) == list:
+            # if we set list data by command line (robot not support)
+            new_value = data.strip("[]").replace(" ", "").split(",")
+            builtin.set_global_variable(name, new_value)
+            _vars[name[2:-1]] = new_value
     print(_vars)
     return _vars
