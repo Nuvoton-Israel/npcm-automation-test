@@ -203,6 +203,7 @@ Prepare Mount Folder
     # mount -t jffs2 /dev/mtdblock6 /mnt/flash/mtd6
     # mount -t ext4 /dev/mmcblk0p1 /mnt/emmc/p1
     # mount -t vfat /dev/sda1 /mnt/usb/p1
+    Should Not Be Empty  ${device}
     ${folder}=  Run Keyword If  '${flash}' == 'spi'
     ...     Mount SPI Folder  ${device}
     ...  ELSE IF  '${flash}' == 'usb'

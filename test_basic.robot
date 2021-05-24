@@ -169,7 +169,7 @@ I2C Slave EEPROM Stress Test
 	Should Not Be Empty  ${I2C_MASTER}  msg=${msg}
 	Should Not Be Empty  ${I2C_SALVE}  msg=${msg}
 	# copy test binary to DUT
-	Copy Data To BMC  ${DIR_SCRIPT}/i2c_slave_rw  /tmp
+	Copy Data To BMC  ${DIR_SCRIPT}/${BOARD}/i2c_slave_rw  /tmp
 	# @{args}:
 	# I2C bus as master,  2
 	# I2C bus as slave,   1

@@ -25,7 +25,7 @@ ${DIR_STAT}         /tmp/log
                     ...  cc_dry2  i2cdetect  i2cset  i2cget  i2ctransfer
                     ...  head  tr  awk  cut  sed  md5sum  taskset
                     ...  fdisk  mke2fs  sleep
-${SPI_DEV}          mtdblock8
+${SPI_DEV}          ${EMPTY}
 ${MMC_DEV}          mmcblk0p1
 ${USB_DEV}          sda1  # the USB mass storage on DUT
 ${UDC_DEV}          sdb1  # the USB mass storage on PC

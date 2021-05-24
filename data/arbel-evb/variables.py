@@ -7,3 +7,4 @@ NET_SECONDARY_IP = ["10.191.20.51", "10.191.20.52"]
 #NET_SECONDARY_IP = ["", ""]
 NET_SECONDARY_INTF = ["eth0", "eth3"]
 NET_SECONDARY_THR = ["60", "550"]
+SPI_DEV = "mtdblock7"
