@@ -19,6 +19,9 @@ ${DD_SCRIPT}		dd_test.sh
 ${ADC_SCRIPT}		adc_test.sh
 ${UDC_SCRIPT}		udc_dd_test.sh
 ${I2C_SCRIPT}		i2c_slave_eeprom.sh
+${I2C_STRESS_BIN}	i2c_slave_rw
+${GPIO_STRESS}		gpio_stress.sh
+${GPIO_STRESS_BIN}	gpio_test
 ${ignore_err}		${0}
 
 *** Test Cases ***
@@ -64,6 +67,29 @@ ADC Stress Test
 	Run Stress Test Script And Verify  4
 	...  script=${ADC_SCRIPT}
 
+GPIO Stress Test
+	[Documentation]  Random set up gpio value and verify value
+	[Tags]  Stress Test  Onboard  GPIO
+
+	Should Not Be Empty  ${GPIO_PINS}  msg=gpio pins must defined
+	${mod}=  Evaluate  len("${GPIO_PINS}") % 2
+	Run Keyword If  ${mod} != 0
+	...  Fail   gpio pins must be even
+	# copy test binary to DUT
+	Copy Data To BMC  ${DIR_SCRIPT}/${BOARD}/${GPIO_STRESS_BIN}  /tmp
+	# @{args}:
+	# example -1  4000  8000 22  23  1 10 1000
+	# [4000  8000] => the test delay ms range
+	# 22 => gpio out
+	# 23 => gpio in
+	# 1  => edge, IRQ_TYPE_EDGE_RISING	1
+	# 10 => Iterations
+	# 1000 => msSleep, each iterations delay
+	# TODO: execute script with serveral pin pairs
+	Run Stress Test Script And Verify  -1  4000  8000
+	...  @{GPIO_PINS}[0]  @{GPIO_PINS}[1]  1 10 1000
+	...  script=${GPIO_STRESS}
+
 Primary Interface Net Stress Test
 	[Documentation]  Test network by iperf3 via RGMII
 	[Tags]  Stress Test  Network  Onboard  Gmac  RGMII  eth1
@@ -74,7 +100,7 @@ Primary Interface Net Stress Test
 
 RMII Net Stress Test
 	[Documentation]  Test network by iperf3 via RMII
-	[Tags]  Stress Test  Network  Onboard  Emc  RMII  eth0
+	[Tags]  Stress Test  Network  Onboard  RMII
 
 	Secondary Interface Net Stress Test
 	...  @{NET_SECONDARY_IP}[0]  @{NET_SECONDARY_INTF}[0]  @{NET_SECONDARY_THR}[0]
@@ -82,7 +108,7 @@ RMII Net Stress Test
 
 SGMII Net Stress Test
 	[Documentation]  Test network by iperf3 via SGMII
-	[Tags]  Stress Test  Network  Onboard  Emc  SGMII  eth3
+	[Tags]  Stress Test  Network  Onboard  SGMII
 
 	${length}=  Get Length  ${NET_SECONDARY_INTF}
 	Pass Execution If  ${length} < 2
@@ -169,7 +195,7 @@ I2C Slave EEPROM Stress Test
 	Should Not Be Empty  ${I2C_MASTER}  msg=${msg}
 	Should Not Be Empty  ${I2C_SALVE}  msg=${msg}
 	# copy test binary to DUT
-	Copy Data To BMC  ${DIR_SCRIPT}/${BOARD}/i2c_slave_rw  /tmp
+	Copy Data To BMC  ${DIR_SCRIPT}/${BOARD}/${I2C_STRESS_BIN}  /tmp
 	# @{args}:
 	# I2C bus as master,  2
 	# I2C bus as slave,   1

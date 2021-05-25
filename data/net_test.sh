@@ -18,7 +18,7 @@ fi
 #initialize  variables
 BASEDIR=$(dirname "$0")
 run_start_time=$(date +%s);
-number_of_tests_run=-1
+number_of_tests_run=0
 number_of_tests_failed=0
 seconds_passed=0
 client_threshold_bandwidth=$6

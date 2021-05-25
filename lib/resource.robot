@@ -32,6 +32,7 @@ ${UDC_DEV}          sdb1  # the USB mass storage on PC
 ${I2C_MASTER}       ${EMPTY}  # the i2c master bus
 ${I2C_SALVE}        ${EMPTY}  # the i2c slave bus
 ${I2C_EEPROM_ADDR}  0x64
+@{GPIO_PINS}
 
 # net test
 #${ALLOW_IGNORE_SECONDARY}    ${False}

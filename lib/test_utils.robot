@@ -250,7 +250,7 @@ Check Fail In State File
     # find state file from stdout
     ${rc}  ${stat_file}=  Shell Cmd
     ...  echo '${stdout}' | grep Statefile | awk '{print $2}' | tr -d '\n'
-    Should Not Be Empty  ${stat_file}
+    Should Not Be Empty  ${stat_file}  msg=Cannot get state file name
     Set Test Variable  ${STATE_FILE}  ${stat_file}
     Log  state file: ${stat_file}
     ${cmd}=  Set Variable  cat ${stat_file} | grep -o failed.* | awk '{print $2}'

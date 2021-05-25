@@ -5,6 +5,8 @@ NET_PRIMARY_INTF = "eth1"
 NET_PRIMARY_THR = "550"
 NET_SECONDARY_IP = ["10.191.20.51", "10.191.20.52"]
 #NET_SECONDARY_IP = ["", ""]
-NET_SECONDARY_INTF = ["eth0", "eth3"]
+# Rev. B eth0 --> SGMII, eth3 -->RMII
+NET_SECONDARY_INTF = ["eth3", "eth0"]
 NET_SECONDARY_THR = ["60", "550"]
 SPI_DEV = "mtdblock7"
+GPIO_PINS = ["22", "23"]

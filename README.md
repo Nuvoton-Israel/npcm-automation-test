@@ -29,12 +29,12 @@ Here are some examples to run test case
     robot -v BOARD:arbel-evb test_basic.robot
     ```
 
-* Run Stress test 20 minutes for each test case:
+* Run stress test 20 minutes for each test case:
     ```
     robot -i "Stress Test" -v "STRESS_TIME:20 min" -v "TIMEOUT_TIME:21 min" test_basic.robot
     ```
 
-* Run Stress test with out network secondary interface cases:
+* Run stress test with out network secondary interface cases:
     * arbel-evb:
     ```
     robot -i "Stress Test" -v BOARD:arbel-evb -v ALLOW_IGNORE_SECONDARY:True -v NET_SECONDARY_IP:"," test_basic.robot
@@ -55,6 +55,19 @@ Here are some examples to run test case
     You should set local PC as iperf server, set DUT IP as RMII IP like following example:
     ```
     robot -i RMII -v BOARD:arbel-evb -v ALLOW_IGNORE_SECONDARY:True -v NET_SECONDARY_IP:"10.1.1.11," -v OPENBMC_HOST:10.1.1.11 -v IPERF_SERVER:10.1.1.10 -v IPERF_USER:test -v IPERF_PASSWD:test test_basic.robot
+    ```
+
+* Run full network stress test cases for arbel-evb:
+
+    Because arbel-evb has three ethernet phy, we should set up their eth name, IP address, and threshould for each.
+    You can referenece the data/arbel-evb/variables.py to set them up:
+    * NET_SECONDARY_IP = ["10.191.20.51", "10.191.20.52"]
+    * NET_SECONDARY_INTF = ["eth3", "eth0"]
+    * NET_SECONDARY_THR = ["60", "550"]
+
+    Or change the variables by command line like:
+    ```
+    robot -i network -v NET_SECONDARY_IP:"192.168.56.11,192.168.56.12" test_basic.robot
     ```
 
 * Run single test case:
