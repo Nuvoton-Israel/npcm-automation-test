@@ -44,6 +44,19 @@ Here are some examples to run test case
     robot -i "Stress Test" -v BOARD:buv-runbmc -v ALLOW_IGNORE_SECONDARY:True -v NET_SECONDARY_IP:"" test_basic.robot
     ```
 
+    Note: the network test must set up Iperf server IP address, user name and password by variables:
+    * IPERF_SERVER
+    * IPERF_USER
+    * IPERF_PASSWD
+
+    And you must connect DUT each network interface and iperf server in same network.
+
+    If you just want to perform RMII test and only connect RMII to local PC.
+    You should set local PC as iperf server, set DUT IP as RMII IP like following example:
+    ```
+    robot -i RMII -v BOARD:arbel-evb -v ALLOW_IGNORE_SECONDARY:True -v NET_SECONDARY_IP:"10.1.1.11," -v OPENBMC_HOST:10.1.1.11 -v IPERF_SERVER:10.1.1.10 -v IPERF_USER:test -v IPERF_PASSWD:test test_basic.robot
+    ```
+
 * Run single test case:
     ```
     robot -t "Test Hello World" test_basic.robot

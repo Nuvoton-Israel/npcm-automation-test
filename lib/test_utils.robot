@@ -95,41 +95,19 @@ Run Stress Test Script And Verify
     # Check the failed count from log state (xxx_stress.xxx.stat)
     Run Keyword If    ${bmc}    Check Fail In State File  ${stdout}
 
-Start Iperf Server
-    [Documentation]  run iperf3 and return popen object
-
-    ${popen}=  Shell Cmd  iperf3 -s  fork=${1}
-    Should Be True    ${popen.returncode} is ${None}
-    [Return]  ${popen}
-
 Start Remote Iperf Server
     [Documentation]  run iperf3 on remote PC
 
+    ${msg}=  Set Variable  Iperf server IP, user name and password should not be empty.
+    Should Not Be Empty  ${IPERF_SERVER}  msg=${msg}
+    Should Not Be Empty  ${IPERF_USER}  msg=${msg}
+    Should Not Be Empty  ${IPERF_PASSWD}  msg=${msg}
     PC Execute Command  iperf3 -s      fork=${1}
     ...  ip=${IPERF_SERVER}  user=${IPERF_USER}  passwd=${IPERF_PASSWD}
-
-Kill Process By Handle
-    [Documentation]  kill process by popen handle object
-    [Arguments]  ${popen}
-
-    # Description of argument(s):
-    # @{popen}      the popen object created by fork subprocess
-
-    ${shell_rc}=  Kill Cmd  popen=${popen}
-
-Kill Process By name
-    [Documentation]  kill process by process name
-    [Arguments]  ${name}
-
-    # Description of argument(s):
-    # ${name}       the process name we want to kill
-
-    ${cmd}=  Catenate  pgrep iperf
-    ${rc}  ${output}=  Run And Return Rc And Output  ${cmd}
-    Return From Keyword If  '${output}' == '${EMPTY}'
-    ${pids}=  Replace String  ${output}  ${\n}  ${SPACE}
-    Log  kill process: ${pids}
-    OperatingSystem.Run  kill -9 ${pids}
+    Sleep  1
+    # make fail if cannot start iperf server
+    PC Execute Command  pgrep iperf3
+    ...  ip=${IPERF_SERVER}  user=${IPERF_USER}  passwd=${IPERF_PASSWD}
 
 PC Kill Process By name
     [Documentation]  kill process by process name on remote PC
@@ -139,6 +117,9 @@ PC Kill Process By name
     # ${name}       the process name we want to kill
 
     ${cmd}=  Catenate  pkill -9 -e iperf
+    # check PC parameters are valid
+    ${is_bad}=  Evaluate  len("${IPERF_SERVER}") == 0 or len("${IPERF_USER}") == 0 or len("${IPERF_PASSWD}") == 0
+    Return From Keyword If  ${is_bad}
     ${stdout}  ${stderr}  ${rc}=
     ...  PC Execute Command  ${cmd}  ip=${IPERF_SERVER}
     ...    user=${IPERF_USER}  passwd=${IPERF_PASSWD}  ignore_err=${1}
@@ -356,6 +337,7 @@ Set Secondary Interface IP address
     # ${ip_address} the ethernet interface IP address
     # ${interface}  the interface we want to test
 
+    Return From Keyword If  '${OPENBMC_HOST}' == '${ip_address}'
     SSHLibrary.Close All Connections
     ${cmd}=  Catenate  /sbin/ifconfig ${interface} ${ip_address}
     ${stdout}  ${stderr}  ${rc}=

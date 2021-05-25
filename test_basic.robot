@@ -50,7 +50,7 @@ CPU Stress Test
 
 RNG Stress Test
 	[Documentation]  Test Random generater by ent tool
-	[Tags]  Stress Test  Onboard RNG
+	[Tags]  Stress Test  Onboard  RNG
 
 	Run Stress Test Script And Verify
 	...  script=${RNG_SCRIPT}
