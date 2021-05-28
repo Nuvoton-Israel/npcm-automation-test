@@ -1,21 +1,32 @@
 #!/bin/bash
 
-if [ -z "$1" ] ; then
-    echo "usage:  sh adc_test.sh <ch>"
+if [ -z "$5" ] ; then
+    echo "usage:  sh adc_test.sh <ch> <ref Volt> <resolution> <boundary>"
+	echo '$1: the ADC channel'
+	echo '$2: the ADC reference voltage'
+	echo '$3: the ADC resolution'
+	echo '$4: the ADC upper bound'
+	echo '$5: the ADC lower bound'
 	exit 1
 fi
 
 #initialize  variables
 channel="in_voltage$1_raw"
-count=-1
+ref_volt=`echo $2 | awk '{print ($1 * 1000)}'` # V => mV, 2 * 1000
+resolution=$3  # poleg 1024, arbel 4096
+upbound=$4     # 1809
+lowbound=$5    # 1760
+count=0
 fail=0
 BASEDIR=$(dirname "$0")
 run_start_time=$(date +%s);
 seconds_passed=0
 results_log_file="$BASEDIR/log/adc_stress.stat"
+log_file="$BASEDIR/log/adc_stress.log"
 result_log=PASS
 
 echo "Statefile: $results_log_file"
+echo "$channel, $ref_volt, $resolution, $upbound, $lowbound" | tee $log_file
 
 cd /sys/devices/platform/ahb/ahb:apb/f000c000.adc/iio:device0/
 
@@ -34,15 +45,17 @@ dump_info(){
 # 10000 time cost about 104 seconds
 # original use count -le 1000000
 while [ ! -f /tmp/stop_stress_test ]
+#while [ $count -le 10 ]
 do
 
 	ADC_VAL_RAW=`( cat $channel )`
-	ADC_VAL_VOLT=$(((ADC_VAL_RAW * 2000) / 1024))
+	ADC_VAL_VOLT=$(((ADC_VAL_RAW * $ref_volt) / $resolution))
+	#echo $ADC_VAL_VOLT
 
 	result_log=PASS
-	if [ $ADC_VAL_VOLT -gt 1809 ] | [ $ADC_VAL_VOLT -lt 1760 ]
+	if [ $ADC_VAL_VOLT -gt $upbound -o $ADC_VAL_VOLT -lt $lowbound ]
 	then
-		echo channel=$channel count=$count fail=$fail ADC_VAL_RAW=$ADC_VAL_RAW  ADC_VAL_VOLT=$ADC_VAL_VOLT
+		echo channel=$channel count=$count fail=$fail ADC_VAL_RAW=$ADC_VAL_RAW  ADC_VAL_VOLT=$ADC_VAL_VOLT >> $log_file
 		fail=$(( fail + 1 ))
 		result_log=FAIL
 	fi

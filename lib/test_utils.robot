@@ -420,3 +420,16 @@ Net Stress Test
 	FOR  ${eth}  IN  @{disable_interfaces}
 		Enable Ethernet Interface  ${eth}  ${True}
 	END
+
+Check Empty Variables
+	[Documentation]  check input variable, fail if empty
+	[Arguments]  ${args}  ${msg}
+
+	# Description of argument(s):
+	# ${args}    Varialbes we need to check is exist an not empty
+	# ${msg}     the error message show when fail
+
+	FOR  ${arg}  IN  @{args}
+		Variable Should Exist  ${${arg}}  ${msg}, ${arg}
+		Should Not Be Empty  ${${arg}}  ${msg}, ${arg}
+	END

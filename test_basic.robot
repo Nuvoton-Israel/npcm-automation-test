@@ -64,7 +64,11 @@ ADC Stress Test
 
 	# @{args}:
 	# 4 => use adc 4
-	Run Stress Test Script And Verify  4
+	${vars}=  Create List  ADC_CHHANEL  ADC_REF_VOLT  ADC_RESOLUTION
+	...  ADC_UP_BOUND  ADC_LOW_BOUND
+	Check Empty Variables  ${vars}  msg=ADC vars cannot be empty
+	Run Stress Test Script And Verify  ${ADC_CHHANEL}  ${ADC_REF_VOLT}
+	...  ${ADC_RESOLUTION}  ${ADC_UP_BOUND}  ${ADC_LOW_BOUND}
 	...  script=${ADC_SCRIPT}
 
 GPIO Stress Test

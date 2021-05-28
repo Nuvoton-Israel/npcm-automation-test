@@ -11,7 +11,7 @@ if [ -z "$8" ]
 	echo '$6 Edge'
 	echo '$7 Iterations'
 	echo '$8 msSleep'
-	exit
+	exit 1
 fi
 
 
