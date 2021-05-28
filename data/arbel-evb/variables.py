@@ -9,4 +9,5 @@ NET_SECONDARY_IP = ["10.191.20.51", "10.191.20.52"]
 NET_SECONDARY_INTF = ["eth3", "eth0"]
 NET_SECONDARY_THR = ["60", "550"]
 SPI_DEV = "mtdblock7"
-GPIO_PINS = ["22", "23"]
+# SMB18, J4
+GPIO_PINS = ["0", "1"]

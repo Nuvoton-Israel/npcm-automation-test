@@ -16,6 +16,38 @@ Currently we support two boards: buv-runbmc and arbel-evb. The variables
 or scripts depend on board is under data/${BOARD}. It recommends modify
 variables.py on test PC instead of setting up all variables by command line.
 
+### DUT setup ###
+The DUT may need make partitions for eMMC at first time, you can run robot script to fdisk and mkfs eMMC.
+
+* Run partition command:
+    ```
+    robot -v OPENBMC_HOST:${DUT_IP} format_emmc.robot
+    ```
+
+The DUT environment must contains programs which listed below for run test,
+user can porting these files by [change link](https://github.com/Nuvoton-Israel/openbmc/pull/221/files):
+* ent:
+
+    Pseudorandom Number Sequence Test Program, for RNG test case.
+* wr_perf_test, rd_perf_test:
+
+    Data read/write performance test, for storage relative test case.
+* iperf3:
+
+    Network bandwidth test program, for network relative test case.
+* cc_dry2:
+
+    Dhrystone benchmark, for CPU test case.
+* i2cdetect, i2cset, i2cget, i2ctransfer:
+
+    I2C tools, for I2C issue analyze.
+* head, tr, awk, cut, sed, md5sum, taskset, timeout, sleep:
+
+    Some busybox utils, for run bash script.
+* fdisk, mke2fs
+    Some busybox utils, for run format emmc robot.
+
+
 ### Run Tests ###
 Here are some examples to run test case
 
