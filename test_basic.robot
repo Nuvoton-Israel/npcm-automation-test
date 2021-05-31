@@ -91,7 +91,7 @@ GPIO Stress Test
 	# 1000 => msSleep, each iterations delay
 	# TODO: execute script with serveral pin pairs
 	Run Stress Test Script And Verify  -1  4000  8000
-	...  @{GPIO_PINS}[0]  @{GPIO_PINS}[1]  1 10 1000
+	...  ${GPIO_PINS}[0]  ${GPIO_PINS}[1]  1 10 1000
 	...  script=${GPIO_STRESS}
 
 Primary Interface Net Stress Test
@@ -107,7 +107,7 @@ RMII Net Stress Test
 	[Tags]  Stress Test  Network  Onboard  RMII
 
 	Secondary Interface Net Stress Test
-	...  @{NET_SECONDARY_IP}[0]  @{NET_SECONDARY_INTF}[0]  @{NET_SECONDARY_THR}[0]
+	...  ${NET_SECONDARY_IP}[0]  ${NET_SECONDARY_INTF}[0]  ${NET_SECONDARY_THR}[0]
 	[Teardown]  Net Test Teardown
 
 SGMII Net Stress Test
@@ -118,7 +118,7 @@ SGMII Net Stress Test
 	Pass Execution If  ${length} < 2
 	...  This board:${BOARD} does not support SGMII test, just ignore.
 	Secondary Interface Net Stress Test
-	...  @{NET_SECONDARY_IP}[1]  @{NET_SECONDARY_INTF}[1]  @{NET_SECONDARY_THR}[1]
+	...  ${NET_SECONDARY_IP}[1]  ${NET_SECONDARY_INTF}[1]  ${NET_SECONDARY_THR}[1]
 	[Teardown]  Net Test Teardown
 
 FIU Stress Test
