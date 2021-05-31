@@ -52,7 +52,7 @@ CPU Stress Test
 	...  script=${CPU_SCRIPT}
 
 RNG Stress Test
-	[Documentation]  Test Random generater by ent tool
+	[Documentation]  Test Random generator by ent tool
 	[Tags]  Stress Test  Onboard  RNG
 
 	Run Stress Test Script And Verify
@@ -63,11 +63,15 @@ ADC Stress Test
 	[Tags]  Stress Test  Onboard  ADC
 
 	# @{args}:
+	# example 4  2  1024  1820  1760
 	# 4 => use adc 4
-	${vars}=  Create List  ADC_CHHANEL  ADC_REF_VOLT  ADC_RESOLUTION
+	# 2 => the reference voltage to calculate real voltage
+	# 1024 => resolution for ADC raw data
+	# [1820 1760] => the expected voltage boundary, fail if out of boundary
+	${vars}=  Create List  ADC_CHANNEL  ADC_REF_VOLT  ADC_RESOLUTION
 	...  ADC_UP_BOUND  ADC_LOW_BOUND
 	Check Empty Variables  ${vars}  msg=ADC vars cannot be empty
-	Run Stress Test Script And Verify  ${ADC_CHHANEL}  ${ADC_REF_VOLT}
+	Run Stress Test Script And Verify  ${ADC_CHANNEL}  ${ADC_REF_VOLT}
 	...  ${ADC_RESOLUTION}  ${ADC_UP_BOUND}  ${ADC_LOW_BOUND}
 	...  script=${ADC_SCRIPT}
 
