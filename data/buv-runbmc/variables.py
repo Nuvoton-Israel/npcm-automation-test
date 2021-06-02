@@ -11,8 +11,8 @@ NET_SECONDARY_INTF = ["eth0"]
 NET_SECONDARY_THR = ["60"]
 # Storage
 SPI_DEV = "mtdblock8"
-# GPIO
-GPIO_PINS = ["22", "23"]
+# GPIO pin pairs, [[out, in], [out, in], ...]
+GPIO_PINS = ["6", "5", "4", "7", "22", "23"]
 # ADC
 ADC_CHANNEL = "4"
 ADC_REF_VOLT = "2"

@@ -6,11 +6,11 @@ if [ -z "$8" ]
 	echo '$1 core . -1 for auto cpu selection'
 	echo '$2 while interval lower delay (ms).'
 	echo '$3 while interval upper delay (ms).'
-	echo '$4 gpio loop1 number'
-	echo '$5 gpio loop2 number'
-	echo '$6 Edge'
-	echo '$7 Iterations'
-	echo '$8 msSleep'
+	echo '$4 Edge'
+	echo '$5 Iterations'
+	echo '$6 msSleep'
+	echo '$7 gpio loop1 number'
+	echo '$8 gpio loop2 number'
 	exit 1
 fi
 
@@ -24,9 +24,9 @@ seconds_passed=0
 loop_num=0
 GPIO_BIN=/tmp/gpio_test
 
-results_log_file="$BASEDIR/log/gpio_stress.$4.$5.stat"
-log_file="$BASEDIR/log/gpio_stress.$4.$5.log"
-tmp_file="/tmp/gpio_stress.$4.$5.tmp"
+results_log_file="$BASEDIR/log/gpio_stress.$7.$8.stat"
+log_file="$BASEDIR/log/gpio_stress.$7.$8.log"
+tmp_file="/tmp/gpio_stress.$7.$8.tmp"
 result_log=PASS
 
 echo "Statefile: $results_log_file"
@@ -35,8 +35,8 @@ echo  > $tmp_file
 echo  > $log_file
 
 #Export gpios
-echo $4 > /sys/class/gpio/export 2> /dev/null
-echo $5 > /sys/class/gpio/export 2> /dev/null
+echo $7 > /sys/class/gpio/export 2> /dev/null
+echo $8 > /sys/class/gpio/export 2> /dev/null
 
 
 while [ ! -f /tmp/stop_stress_test ]
@@ -65,7 +65,7 @@ do
 	echo  > $tmp_file
 	### end of updating log file
 
-	gpio_test_cmd="${GPIO_BIN} $4 $5 $6 $7 $8"
+	gpio_test_cmd="${GPIO_BIN} $7 $8 $4 $5 $6"
 	if [ "$1" -eq -1 ]; then
 		echo $gpio_test_cmd >> $tmp_file
 		$gpio_test_cmd >> $tmp_file 2>&1
@@ -96,7 +96,8 @@ do
 
 
 	loop_num=$(($loop_num + 1))
-	echo "gpio_stress.$4.$5 loop = $loop_num"
+	echo "gpio_stress.$7.$8 loop = $loop_num"
 
 
 done
+sync

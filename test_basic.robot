@@ -80,23 +80,20 @@ GPIO Stress Test
 	[Tags]  Stress Test  Onboard  GPIO
 
 	Should Not Be Empty  ${GPIO_PINS}  msg=gpio pins must defined
-	${mod}=  Evaluate  len("${GPIO_PINS}") % 2
-	Run Keyword If  ${mod} != 0
-	...  Fail   gpio pins must be even
 	# copy test binary to DUT
 	Copy Data To BMC  ${DIR_SCRIPT}/${BOARD}/${GPIO_STRESS_BIN}  /tmp
 	# @{args}:
-	# example -1  4000  8000 22  23  1 10 1000
+	# example -1  4000  8000 1 10 1000 22  23
 	# [4000  8000] => the test delay ms range
-	# 22 => gpio out
-	# 23 => gpio in
-	# 1  => edge, IRQ_TYPE_EDGE_RISING	1
+	# 1  => edge, IRQ_TYPE_EDGE_RISING	1, not used currently
 	# 10 => Iterations
 	# 1000 => msSleep, each iterations delay
-	# TODO: execute script with serveral pin pairs
-	Run Stress Test Script And Verify  -1  4000  8000
-	...  ${GPIO_PINS}[0]  ${GPIO_PINS}[1]  1 10 1000
-	...  script=${GPIO_STRESS}
+	# 22 => gpio out
+	# 23 => gpio in
+	@{pairs}=  Make GPIO Pin Pairs
+	Run Multiple Stress Test Scripts And Verify  -1  4000  8000
+	...  1 10 1000  script=${GPIO_STRESS}
+	...  var_list=${pairs}   state_fn=Get Gpio State File
 
 Primary Interface Net Stress Test
 	[Documentation]  Test network by iperf3 via RGMII

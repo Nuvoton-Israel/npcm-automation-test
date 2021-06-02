@@ -24,7 +24,7 @@ ${DIR_STAT}         /tmp/log
 @{TEST_TOOLS}       timeout  ent  iperf3  wr_perf_test  rd_perf_test
                     ...  cc_dry2  i2cdetect  i2cset  i2cget  i2ctransfer
                     ...  head  tr  awk  cut  sed  md5sum  taskset
-                    ...  fdisk  mke2fs  sleep
+                    ...  fdisk  mke2fs  sleep  pgrep
 ${SPI_DEV}          ${EMPTY}
 ${MMC_DEV}          mmcblk0p1
 ${USB_DEV}          sda1  # the USB mass storage on DUT
@@ -33,6 +33,7 @@ ${I2C_MASTER}       ${EMPTY}  # the i2c master bus
 ${I2C_SALVE}        ${EMPTY}  # the i2c slave bus
 ${I2C_EEPROM_ADDR}  0x64
 @{GPIO_PINS}
+${GPIO_SATE}        gpio_stress
 
 # net test
 #${ALLOW_IGNORE_SECONDARY}    ${False}

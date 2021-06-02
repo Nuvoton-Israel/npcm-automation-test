@@ -2,6 +2,7 @@
 Documentation	Utilities for unit test and stress test
 
 Library		bmc_ssh_utils.py
+Library		test_utils.py
 Library		gen_cmd.py
 Library		SCPLibrary    WITH NAME   scp
 Library		String
@@ -94,6 +95,54 @@ Run Stress Test Script And Verify
     Should Be Equal    ${rc}    ${0}
     # Check the failed count from log state (xxx_stress.xxx.stat)
     Run Keyword If    ${bmc}    Check Fail In State File  ${stdout}
+
+Run Multiple Stress Test Scripts And Verify
+    [Documentation]  run stress test script and check result
+    [Arguments]  @{args}  ${script}  ${var_list}  ${state_fn}
+    ...  ${exec_time}=${STRESS_TIME}  ${timeout}=${TIMEOUT_TIME}
+    [Timeout]    ${timeout}
+
+    # Description of argument(s):
+    # @{args}       the argurments for run script
+    # ${script}     test script path
+    # ${var_list}   the dynamic variable(s) for each stress test
+    # ${state_fn}   the function get state file name from var_list item
+    # ${exec_time}  how much time we should set stop flag to script
+    #               please note the script will not terminate immediately when we ask it to stop
+    # ${timeout}    how much time we consider the test is timeout fail
+
+    Setup Monitor  ${exec_time}
+    @{stat_files}=  Create List
+    Copy Data To BMC  ${DIR_SCRIPT}/${script}    /tmp
+    FOR  ${run_var}  IN  @{var_list}
+        ${cmd}=  Catenate  /tmp/${script}  @{args}  @{run_var}
+        ${state}=  Run Keyword  ${state_fn}  ${run_var}
+        Log  Execute command: ${cmd}
+        Log  State file: ${state}
+        Append To List  ${stat_files}  ${state}
+        BMC Execute Command  ${cmd}  fork=${1}
+    END
+    Sleep  1
+    # check script still run in background
+    BMC Execute Command  pgrep ${script}
+    Sleep  ${exec_time}
+    Wait Until Keyword Succeeds
+    ...  1 min  5 sec  Check Script Is Finished  ${script}
+    # check all state files by python library
+    ${status}    ${error}=  Check State Files  ${stat_files}
+    Run Keyword If  '${status}' == 'FAIL'    Fail   ${error}
+
+Check Script Is Finished
+    [Documentation]  make sure all script is not executing
+    [Arguments]  ${script}
+
+    # Description of argument(s):
+    # ${script}     test script name
+
+    ${stdout}  ${stderr}  ${rc}=
+    ...  BMC Execute Command    pgrep ${script}    ignore_err=${1}
+    Run Keyword If  ${rc} == 0    Fail    script still running...
+
 
 Start Remote Iperf Server
     [Documentation]  run iperf3 on remote PC
