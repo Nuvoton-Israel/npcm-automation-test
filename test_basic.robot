@@ -12,6 +12,7 @@ Test Teardown	Collect Log On Test Case Fail
 # test scripts
 ${GPIO_SCRIPT}		gpio_test.sh
 ${PWM_SCRIPT}		pwm_fan_test.sh
+${TMPS_SCRIPT}		tmps_test.sh
 ${CPU_SCRIPT}		drystone_on_off.sh
 ${RNG_SCRIPT}		rng_test.sh
 ${Net_SCRIPT}		net_test.sh
@@ -25,21 +26,29 @@ ${GPIO_STRESS_BIN}	gpio_test
 ${ignore_err}		${0}
 
 *** Test Cases ***
-Test Run Pwm and Fan
+Pwm and Fan Unit Test
 	[Documentation]  PWM and Fan tach test
 	[Tags]  Basic  Onboard  HWsetup  PWM  FAN
 	[Template]  Test Script And Verify
 
 	# script
-	${PWM_SCRIPT}
+	${PWM_SCRIPT}  @{BOARD_SUPPORTED}
 
-Test Run GPIO
+GPIO Unit Test
 	[Documentation]  GPIO function test
 	[Tags]  Basic  Onboard  HWsetup  GPIO
 	[Template]  Test Script And Verify
 
 	# script
-	${GPIO_SCRIPT}
+	${GPIO_SCRIPT}  @{BOARD_SUPPORTED}
+
+TMPS Unit Test
+	[Documentation]  TMPS function test
+	[Tags]  Basic  Onboard  HWsetup  TMPS  Arbel
+	[Template]  Test Script And Verify
+
+	# script
+	${TMPS_SCRIPT}  arbel-evb
 
 CPU Stress Test
 	[Documentation]  CPU stress test by running drystone
@@ -113,7 +122,7 @@ RMII Net Stress Test
 
 SGMII Net Stress Test
 	[Documentation]  Test network by iperf3 via SGMII
-	[Tags]  Stress Test  Network  Onboard  SGMII
+	[Tags]  Stress Test  Network  Onboard  SGMII  Arbel
 
 	${length}=  Get Length  ${NET_SECONDARY_INTF}
 	Pass Execution If  ${length} < 2
@@ -235,14 +244,27 @@ Test Hello World
 
 
 *** Keywords ***
+Pass Test If Not Support
+	[Documentation]  Pass test case if current board do not support
+	[Arguments]  @{BOARDS}
+
+	# Description of argument(s):
+	# @{BOARDS}    this test support boards
+
+	${supported}=  Run Keyword And Return Status
+	...  Should Contain  ${BOARDS}  ${BOARD}
+	Pass Execution If  ${supported} == False
+	...  This test case do not supported board ${BOARD}
 
 Test Script And Verify
     [Documentation]  run test script and check result
-    [Arguments]  ${script}
+    [Arguments]  ${script}  @{BOARDS}
 
     # Description of argument(s):
     # ${script}    test script path
+    # @{BOARDS}    this test support boards
 
+    Pass Test If Not Support  @{BOARDS}
     Copy Data To BMC  ${DIR_SCRIPT}/${BOARD}/${script}    /tmp
     ${stdout}  ${stderr}  ${rc}=
     ...  BMC Execute Command  /bin/bash /tmp/${script}
