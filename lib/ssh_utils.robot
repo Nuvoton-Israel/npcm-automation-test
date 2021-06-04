@@ -21,3 +21,19 @@ PC Execute Command
 
     Run Keyword And Return  OS Execute Command  ${cmd}
     ...  fork=${fork}  ignore_err=${ignore_err}  time_out=${15}
+
+
+Get Files From SFTP Server
+    [Documentation]  Get files from the SFTP server.
+    [Arguments]  ${server_host}  ${username}  ${path}  @{files}
+
+    # Description of argument(s):
+    # server_host   The host name or IP address of the SFTP server.
+    # path          The file path on SFTP server.
+    # files         which files we want
+
+    FOR  ${file}  IN  @{files}
+        Shell Cmd
+        ...  scp ${username}@${server_host}:${path}/${file} ${file}
+        ...  show_err=${1}
+    END

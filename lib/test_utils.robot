@@ -8,6 +8,7 @@ Library		SCPLibrary    WITH NAME   scp
 Library		String
 Library		OperatingSystem
 Library		DateTime
+Library		load_var_utils.py
 Resource	resource.robot
 Resource	ssh_utils.robot
 
@@ -234,6 +235,7 @@ Prepare Mount Folder
     # mount -t ext4 /dev/mmcblk0p1 /mnt/emmc/p1
     # mount -t vfat /dev/sda1 /mnt/usb/p1
     Should Not Be Empty  ${device}
+    Set Test Variable  ${MOUNT_FOLDER}  ${EMPTY}
     ${folder}=  Run Keyword If  '${flash}' == 'spi'
     ...     Mount SPI Folder  ${device}
     ...  ELSE IF  '${flash}' == 'usb'
@@ -242,6 +244,7 @@ Prepare Mount Folder
     ...     Mount EMMC Folder  ${device}
     ...  ELSE
     ...     Fail  msg=flash must be one of spi, usb, or emmc
+    Set Test Variable  ${MOUNT_FOLDER}  ${folder}
     [Return]  ${folder}
 
 Unmount Folder
@@ -261,6 +264,7 @@ Clean Mounted Folder
     # Description of argument(s):
     # ${folder}     the folder mount storage device
 
+    Should Not Be Empty  ${folder}
     ${stdout}  ${stderr}  ${rc}=  BMC Execute Command
     ...  mount | grep ${folder}    ignore_err=${1}
     Run Keyword If  '${rc}' == '${0}'
@@ -363,11 +367,8 @@ Get Storage Test State information
 
 Storage Test Teardown
     [Documentation]  teardown function for storage test
-    [Arguments]  ${folder}
 
-    # Description of argument(s):
-    # ${folder}     the folder mount storage device
-    Clean Mounted Folder  ${folder}
+    Clean Mounted Folder  ${MOUNT_FOLDER}
     Get Storage Test State information
 
 Simple Get Test State information
@@ -414,6 +415,7 @@ Enable Ethernet Interface
 
 Check DUT Environment
     [Documentation]  check DUT image contains necessary tools
+    [Arguments]  @{tools}
 
     # check board setting first
     Should Contain  ${BOARD_SUPPORTED}  ${BOARD}
@@ -421,7 +423,7 @@ Check DUT Environment
     # prepare state file folder
     BMC Execute Command  mkdir -v ${DIR_STAT}  ignore_err=${1}  time_out=${10}
     # BMC Execute Command  env  print_out=${1}
-    ${cmd}=  Catenate  PATH=$PATH:/usr/sbin:/sbin which   @{TEST_TOOLS}
+    ${cmd}=  Catenate  PATH=$PATH:/usr/sbin:/sbin which   @{tools}
     ${stdout}  ${stderr}  ${rc}=
     ...  BMC Execute Command  ${cmd}  print_out=${0}  time_out=${10}
     Should Be Equal    ${rc}    ${0}
@@ -472,7 +474,7 @@ Net Stress Test
 
 Check Empty Variables
 	[Documentation]  check input variable, fail if empty
-	[Arguments]  ${args}  ${msg}
+	[Arguments]  @{args}  ${msg}
 
 	# Description of argument(s):
 	# ${args}    Varialbes we need to check is exist an not empty
@@ -482,3 +484,22 @@ Check Empty Variables
 		Variable Should Exist  ${${arg}}  ${msg}, ${arg}
 		Should Not Be Empty  ${${arg}}  ${msg}, ${arg}
 	END
+
+Pass Test If Not Support
+	[Documentation]  Pass test case if current board do not support
+	[Arguments]  @{BOARDS}
+
+	# Description of argument(s):
+	# @{BOARDS}    this test support boards
+
+	${supported}=  Run Keyword And Return Status
+	...  Should Contain  ${BOARDS}  ${BOARD}
+	Pass Execution If  ${supported} == False
+	...  This test case do not supported board ${BOARD}
+
+Load Board Variables
+    [Documentation]  load variables by board
+
+	Should Contain  ${BOARD_SUPPORTED}  ${BOARD}
+	...  msg=Not supported board: ${BOARD},
+	Load Vars  data/${BOARD}/variables.py

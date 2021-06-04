@@ -3,7 +3,6 @@ Documentation	Basic function test for nuvoton chips
 Resource	lib/test_utils.robot
 Resource	lib/resource.robot
 Resource	lib/log_collector.robot
-Library		lib/load_var_utils.py  WITH NAME  VAR_UTILS
 Suite Setup		Basic Suite Setup
 Test Setup		Set Test Variable  ${STATE_FILE}  ${EMPTY}
 Test Teardown	Collect Log On Test Case Fail
@@ -77,9 +76,8 @@ ADC Stress Test
 	# 2 => the reference voltage to calculate real voltage
 	# 1024 => resolution for ADC raw data
 	# [1820 1760] => the expected voltage boundary, fail if out of boundary
-	${vars}=  Create List  ADC_CHANNEL  ADC_REF_VOLT  ADC_RESOLUTION
-	...  ADC_UP_BOUND  ADC_LOW_BOUND
-	Check Empty Variables  ${vars}  msg=ADC vars cannot be empty
+	Check Empty Variables  ADC_CHANNEL  ADC_REF_VOLT  ADC_RESOLUTION
+	...  ADC_UP_BOUND  ADC_LOW_BOUND    msg=ADC vars cannot be empty
 	Run Stress Test Script And Verify  ${ADC_CHANNEL}  ${ADC_REF_VOLT}
 	...  ${ADC_RESOLUTION}  ${ADC_UP_BOUND}  ${ADC_LOW_BOUND}
 	...  script=${ADC_SCRIPT}
@@ -158,7 +156,7 @@ FIU Stress Test
 	...  script=${DD_SCRIPT}
 	Sleep  3
 	#Unmount Folder  ${folder}
-	[Teardown]  Storage Test Teardown  ${folder}
+	[Teardown]  Storage Test Teardown
 
 EMMC Stress Test
 	[Documentation]  Test eMMC by read write eMMC partition
@@ -179,7 +177,7 @@ EMMC Stress Test
 	...  script=${DD_SCRIPT}
 	Sleep  3
 	#Unmount Folder  ${folder}
-	[Teardown]  Storage Test Teardown  ${folder}
+	[Teardown]  Storage Test Teardown
 
 USB Host Stress Test
 	[Documentation]  Test USB host by read write USB mass storage
@@ -196,7 +194,7 @@ USB Host Stress Test
 	...  ${folder}  ${tmp_folder}  100  0  0x100000
 	...  script=${DD_SCRIPT}
 	Sleep  3
-	[Teardown]  Storage Test Teardown  ${folder}
+	[Teardown]  Storage Test Teardown
 
 I2C Slave EEPROM Stress Test
 	[Documentation]  Test I2C master and slave as EEPROM
@@ -244,18 +242,6 @@ Test Hello World
 
 
 *** Keywords ***
-Pass Test If Not Support
-	[Documentation]  Pass test case if current board do not support
-	[Arguments]  @{BOARDS}
-
-	# Description of argument(s):
-	# @{BOARDS}    this test support boards
-
-	${supported}=  Run Keyword And Return Status
-	...  Should Contain  ${BOARDS}  ${BOARD}
-	Pass Execution If  ${supported} == False
-	...  This test case do not supported board ${BOARD}
-
 Test Script And Verify
     [Documentation]  run test script and check result
     [Arguments]  ${script}  @{BOARDS}
@@ -272,18 +258,11 @@ Test Script And Verify
     Should Not Be Empty  ${stdout}  msg=Must print information during run script
     Should Be Equal    ${rc}    ${0}
 
-Load Board Variables
-    [Documentation]  load variables by board
-
-	Should Contain  ${BOARD_SUPPORTED}  ${BOARD}
-	...  msg=Not supported board: ${BOARD},
-	VAR_UTILS.Load Vars  data/${BOARD}/variables.py
-
 Basic Suite Setup
     [Documentation]  this basic test suite setup function
 
 	Load Board Variables
-	Check DUT Environment
+	Check DUT Environment  @{TEST_TOOLS}
 
 Secondary Interface Net Stress Test
     [Documentation]  run ethernet secondary interface test

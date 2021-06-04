@@ -11,6 +11,8 @@ ${OPENBMC_USERNAME}    root
 ${OPENBMC_PASSWORD}    0penBmc
 ${REST_USERNAME}       root
 ${REST_PASSWORD}       0penBmc
+${SFTP_USER}           ${EMPTY}
+${SFTP_SERVER}         ${EMPTY}
 
 # test scripts
 ${DIR_SCRIPT}       data

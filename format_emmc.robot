@@ -2,7 +2,7 @@
 Documentation	Format eMMC tool
 Resource	lib/test_utils.robot
 Resource	lib/resource.robot
-Suite Setup		Check DUT Environment
+Suite Setup		Check DUT Environment  fdisk  mke2fs  mount
 
 *** Variables ***
 # test scripts
