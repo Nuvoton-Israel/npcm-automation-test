@@ -46,7 +46,7 @@ echo "Statefile: $results_log_file"
 
 # Test mount point
 rs=`mount | grep ${mount_path}`
-if [ -d ${mount_path} -a -n "${mount_path}" ];then
+if [ -d ${mount_path} -a -n "${rs}" ];then
     echo "${mount_path} mounted"
 else
     echo "cannot find correct mount point"
