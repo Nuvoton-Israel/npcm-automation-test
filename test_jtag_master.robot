@@ -11,7 +11,6 @@ Suite Setup      Suite Setup Execution
 ${wrong_cpld}         0
 ${program_cpld}       0
 # TODO: remove after get CPLD FW ready
-${SKIP_VER_VERIFY}    1
 
 *** Test Cases ***
 
@@ -36,15 +35,8 @@ Test Program CPLD
     Pass Execution If  ${wrong_cpld}==1  Wrong CPLD chip
     Pass Execution If  ${program_cpld}==0  Skip programming CPLD
 
-    #Program CPLD  ${cpld_firmware2}  ${firmware_version2}
-    # we get only one firmware now, just test program progress
-    Program CPLD  ${cpld_firmware1}  ${firmware_version1}
+    Program CPLD  ${cpld_firmware}
 
-Test Hello World
-    [Documentation]  Hello world
-    [Tags]  Hello
-
-    Log  Hello world!
 
 *** Keywords ***
 Get CPLD Files
@@ -75,41 +67,24 @@ Suite Setup Execution
     ...  json.load(open('${code_base_dir_path}data/cpld.json'))  modules=json
 
     # Note: must get right svf file
-    Set Suite Variable  ${cpld_firmware1}       ${cpld_json["npcm8xx"]["cpld"]["fw1"]}
-    Set Suite Variable  ${cpld_firmware2}       ${cpld_json["npcm8xx"]["cpld"]["fw2"]}
-    Set Suite Variable  ${firmware_version1}    ${cpld_json["npcm8xx"]["cpld"]["fw1ver"]}
-    Set Suite Variable  ${firmware_version2}    ${cpld_json["npcm8xx"]["cpld"]["fw2ver"]}
-    Set Suite Variable  ${readusercode_svf}     ${cpld_json["npcm8xx"]["cpld"]["readusercode"]}
+    Set Suite Variable  ${cpld_firmware}       ${cpld_json["npcm8xx"]["cpld"]["fw"]}
     Set Suite Variable  ${readid_svf}           ${cpld_json["npcm8xx"]["cpld"]["readid"]}
     Set Suite Variable  ${jtag_dev}             ${cpld_json["npcm8xx"]["jtag_dev"]}
-    Set Suite Variable  ${power_cycle_cmd}      ${cpld_json["npcm8xx"]["power_cycle_cmd"]}
 
     Get CPLD Files  ${readid_svf}
     Run KeyWord If  ${program_cpld} == 1
-    ...    Get CPLD Files    ${readusercode_svf}  ${cpld_firmware1}  ${cpld_firmware2}
+    ...    Get CPLD Files    ${cpld_firmware}
     Sleep  1s
 
 Program CPLD
     [Documentation]  Program CPLD.
-    [Arguments]      ${svf_file}  ${version}
+    [Arguments]      ${svf_file}
 
     # Description of argument(s):
     # svf_file   The firmware file.
-    # version    The firmware version.
 
     Copy Data To BMC  ${svf_file}  /tmp
     ${cmd}=  Catenate  loadsvf -d ${jtag_dev} -s /tmp/${svf_file}
     ${output}  ${stderr}  ${rc}=  BMC Execute Command  ${cmd}
     Should Not Contain  ${stderr}  tdo check error
-    Pass Execution If  ${SKIP_VER_VERIFY} == 1
-    ...    CPLD firmware not ready for verify version
 
-    # control hot swap controller to power cycle whole system
-    BMC Execute Command  ${power_cycle_cmd}  ignore_err=1  fork=1
-
-    Sleep  10s
-    Run Keyword  Wait For Host To Ping  ${OPENBMC_HOST}  5 mins
-    Copy Data To BMC  ${readusercode_svf}  /tmp
-    ${cmd}=  Catenate  loadsvf -d ${jtag_dev} -s /var/${readusercode_svf}
-    ${output}  ${stderr}  ${rc}=  BMC Execute Command  ${cmd}
-    Should Contain  ${output}  ${version}
