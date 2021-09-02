@@ -22,9 +22,18 @@ ${I2C_SCRIPT}		i2c_slave_eeprom.sh
 ${I2C_STRESS_BIN}	i2c_slave_rw
 ${GPIO_STRESS}		gpio_stress.sh
 ${GPIO_STRESS_BIN}	gpio_test
+${I3C_SCRIPT}		i3c_test.sh
 ${ignore_err}		${0}
 
 *** Test Cases ***
+I3C Unit Test
+	[Documentation]  I3C test
+	[Tags]  Basic  Onboard  HWsetup  I3C
+	[Template]  Test Script And Verify
+
+	# script
+	${I3C_SCRIPT}  @{BOARD_SUPPORTED}
+
 Pwm and Fan Unit Test
 	[Documentation]  PWM and Fan tach test
 	[Tags]  Basic  Onboard  HWsetup  PWM  FAN
