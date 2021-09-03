@@ -23,6 +23,7 @@ ${I2C_STRESS_BIN}	i2c_slave_rw
 ${GPIO_STRESS}		gpio_stress.sh
 ${GPIO_STRESS_BIN}	gpio_test
 ${I3C_SCRIPT}		i3c_test.sh
+${FIU_SCRIPT}		fiu_test.sh
 ${ignore_err}		${0}
 
 *** Test Cases ***
@@ -33,6 +34,14 @@ I3C Unit Test
 
 	# script
 	${I3C_SCRIPT}  @{BOARD_SUPPORTED}
+
+FIU Unit Test
+	[Documentation]  FIU1 and FIU3 test
+	[Tags]  Basic  Onboard  HWsetup  FIU
+	[Template]  Test Script And Verify
+
+	# script
+	${FIU_SCRIPT}  @{BOARD_SUPPORTED}
 
 Pwm and Fan Unit Test
 	[Documentation]  PWM and Fan tach test
