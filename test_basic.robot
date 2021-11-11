@@ -24,9 +24,18 @@ ${GPIO_STRESS}		gpio_stress.sh
 ${GPIO_STRESS_BIN}	gpio_test
 ${I3C_SCRIPT}		i3c_test.sh
 ${FIU_SCRIPT}		fiu_test.sh
+${AES_SCRIPT}		aes_test.sh
 ${ignore_err}		${0}
 
 *** Test Cases ***
+AES Unit Test
+	[Documentation]  AES test
+	[Tags]  Basic  Onboard  HWsetup  AES
+	[Template]  Test Script And Verify
+
+	# script
+	${AES_SCRIPT}  @{BOARD_SUPPORTED}
+
 I3C Unit Test
 	[Documentation]  I3C test
 	[Tags]  Basic  Onboard  HWsetup  I3C
