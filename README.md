@@ -1,8 +1,36 @@
 # Nuvoton BMC Automation Test
 
 ## Environment Setup ##
+Users can reference the following links to understand the package we used.
 * [Robot Framework Install Instruction](https://github.com/robotframework/robotframework/blob/master/INSTALL.rst)
 * [OpenBMC Test Automation Setup Guide](https://github.com/openbmc/openbmc-test-automation#installation-setup-guide)
+
+### Build environment example ###
+For manager the python package dependencies, there is a convenience program Conda we used.
+* https://docs.conda.io/en/latest/miniconda.html
+
+The following install intruction example will use Conda to setup environment.
+User can install Conda by [Conda installing document](https://docs.anaconda.com/anaconda/install/).
+
+After check your OS version , you can pick up one conda installers to start.
+For example we use Ubuntu 18.04:
+```
+# install conda
+wget https://repo.anaconda.com/miniconda/Miniconda3-py39_4.10.3-Linux-x86_64.sh
+sha256sum Miniconda3-py39_4.10.3-Linux-x86_64.sh
+bash Miniconda3-py39_4.10.3-Linux-x86_64.sh
+
+# please check your conda already initialized, you can create new bash shell or source <path to conda>/bin/activate
+
+# create conda env
+conda create -n bmc python=3
+conda activate bmc
+pip install redfish==3 robotframework==4
+pip install -U requests robotframework-httplibrary robotframework-requests robotframework-scplibrary robotframework-sshlibrary
+
+# use the environment we create before run robot test
+conda activate bmc
+```
 
 
 ## Run commands ##

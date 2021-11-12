@@ -11,6 +11,7 @@ ${OPENBMC_USERNAME}    root
 ${OPENBMC_PASSWORD}    0penBmc
 ${REST_USERNAME}       root
 ${REST_PASSWORD}       0penBmc
+# the file server for jtag master robot, and we login it by SSH public key
 ${SFTP_USER}           ${EMPTY}
 ${SFTP_SERVER}         ${EMPTY}
 
@@ -37,12 +38,17 @@ ${I2C_EEPROM_ADDR}  0x64
 @{GPIO_PINS}
 ${GPIO_SATE}        gpio_stress
 
-# net test
+# === Network ===
 #${ALLOW_IGNORE_SECONDARY}    ${False}
 ${ALLOW_IGNORE_SECONDARY}    ${True}
+
+# the iperf server PC ip address, user name and login password
+# Should NOT be empty, please fill up
 ${IPERF_SERVER}     192.168.56.102
 ${IPERF_USER}       ${EMPTY}
 ${IPERF_PASSWD}     ${EMPTY}
+
+# the DUT IP address, and you must set one connected ehternet as primary
 ${NET_PRIMARY_IP}       ${OPENBMC_HOST}
 # Please set up these variables under ${BOARD}/variables.py
 ${NET_PRIMARY_INTF}     ${EMPTY}
@@ -52,7 +58,7 @@ ${NET_PRIMARY_THR}      ${EMPTY}  # pass stree test min MB/s
 @{NET_SECONDARY_INTF}   # the network secondary interfaces
 @{NET_SECONDARY_THR}
 
-# stress test
+# === Stress Test ===
 #${STRESS_TIME}      20 minutes
 #${TIMEOUT_TIME}     21 minutes
 ${STRESS_TIME}      30 seconds
