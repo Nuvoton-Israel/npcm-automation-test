@@ -1,7 +1,7 @@
 BOARD_TEST_MSG = "hallo arble-evb"
 # I2C
-I2C_MASTER = "4"
-I2C_SALVE = "3"
+I2C_MASTER = "2"
+I2C_SALVE = "1"
 # Network
 NET_PRIMARY_INTF = "eth1"
 NET_PRIMARY_THR = "550"
