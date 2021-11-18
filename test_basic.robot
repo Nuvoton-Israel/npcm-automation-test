@@ -25,9 +25,18 @@ ${GPIO_STRESS_BIN}	gpio_test
 ${I3C_SCRIPT}		i3c_test.sh
 ${FIU_SCRIPT}		fiu_test.sh
 ${AES_SCRIPT}		aes_test.sh
+${PSPI_SCRIPT}		pspi_test.sh
 ${ignore_err}		${0}
 
 *** Test Cases ***
+PSPI Unit Test
+	[Documentation]  PSPI test
+	[Tags]  Basic  Onboard  HWsetup  PSPI
+	[Template]  Test Script And Verify
+
+	# script
+	${PSPI_SCRIPT}  @{BOARD_SUPPORTED}
+
 AES Unit Test
 	[Documentation]  AES test
 	[Tags]  Basic  Onboard  HWsetup  AES
