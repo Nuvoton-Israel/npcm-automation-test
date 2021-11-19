@@ -63,5 +63,6 @@ ${NET_PRIMARY_THR}      ${EMPTY}  # pass stree test min MB/s
 #${TIMEOUT_TIME}     21 minutes
 ${STRESS_TIME}      30 seconds
 ${TIMEOUT_TIME}     60 seconds
+${STRESS_LOOP_COUNT}	50
 
 ${ENABLE_LOG_COLLECT}   ${False}
