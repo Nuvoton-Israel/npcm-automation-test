@@ -51,7 +51,7 @@ I3C Unit Test
 	[Template]  Test Script And Verify
 
 	# script
-	${I3C_SCRIPT}  @{BOARD_SUPPORTED}
+	${I3C_SCRIPT}  arbel-evb
 
 FIU Unit Test
 	[Documentation]  FIU1 and FIU3 test
@@ -84,6 +84,30 @@ TMPS Unit Test
 
 	# script
 	${TMPS_SCRIPT}  arbel-evb
+
+I3C Stress Test
+	[Documentation]  I3C stress test
+	[Tags]  Stress Test  Onboard  HWsetup  I3C  Arbel
+
+	FOR  ${count}  IN RANGE  1  ${STRESS_LOOP_COUNT}
+		Test Script And Verify  ${I3C_SCRIPT}  arbel-evb
+	END
+
+AES Stress Test
+	[Documentation]  AES stress test
+	[Tags]  Stress Test  Onboard  HWsetup  AES
+
+	FOR  ${count}  IN RANGE  1  ${STRESS_LOOP_COUNT}
+		Test Script And Verify  ${AES_SCRIPT}  @{BOARD_SUPPORTED}
+	END
+
+PSPI Stress Test
+	[Documentation]  PSPI stress test
+	[Tags]  Stress Test  Onboard  HWsetup  PSPI
+
+	FOR  ${count}  IN RANGE  1  ${STRESS_LOOP_COUNT}
+		Test Script And Verify  ${PSPI_SCRIPT}  @{BOARD_SUPPORTED}
+	END
 
 CPU Stress Test
 	[Documentation]  CPU stress test by running drystone
