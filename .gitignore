@@ -2,4 +2,4 @@ __pycache__
 *.xml
 *.html
 logs
-*.svf
+*.pyc
