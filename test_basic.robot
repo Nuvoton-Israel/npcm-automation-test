@@ -89,10 +89,12 @@ I3C Stress Test
 	[Documentation]  I3C stress test
 	[Tags]  Stress Test  Onboard  HWsetup  I3C  Arbel
 
+	Pass Test If Not Support  arbel-evb
 	${start}=  Get Time  epoch
 	${stress_time_sec}=  Convert Time  ${STRESS_TIME}
+	Rprint Vars  stress_time_sec
 	FOR  ${count}  IN RANGE  1  99999
-		Test Script And Verify  ${I3C_SCRIPT}  arbel-evb
+		Test Script And Verify  ${I3C_SCRIPT}  arbel-evb  quiet=1
 		${now}=  Get Time  epoch
 		${diff}=  Evaluate  ${now} - ${start}
 		Exit For Loop If    ${diff} > ${stress_time_sec}
@@ -104,8 +106,9 @@ AES Stress Test
 
 	${start}=  Get Time  epoch
 	${stress_time_sec}=  Convert Time  ${STRESS_TIME}
+	Rprint Vars  stress_time_sec
 	FOR  ${count}  IN RANGE  1  99999
-		Test Script And Verify  ${AES_SCRIPT}  @{BOARD_SUPPORTED}
+		Test Script And Verify  ${AES_SCRIPT}  @{BOARD_SUPPORTED}  quiet=1
 		${now}=  Get Time  epoch
 		${diff}=  Evaluate  ${now} - ${start}
 		Exit For Loop If    ${diff} > ${stress_time_sec}
@@ -117,8 +120,28 @@ PSPI Stress Test
 
 	${start}=  Get Time  epoch
 	${stress_time_sec}=  Convert Time  ${STRESS_TIME}
+	Rprint Vars  stress_time_sec
 	FOR  ${count}  IN RANGE  1  99999
-		Test Script And Verify  ${PSPI_SCRIPT}  @{BOARD_SUPPORTED}
+		Test Script And Verify  ${PSPI_SCRIPT}  @{BOARD_SUPPORTED}  quiet=1
+		${now}=  Get Time  epoch
+		${diff}=  Evaluate  ${now} - ${start}
+		Exit For Loop If    ${diff} > ${stress_time_sec}
+	END
+
+JTAGM Stress Test
+	[Documentation]  JTAG Master stress test
+	[Tags]  Stress Test  Onboard  HWsetup  JTAGM  Arbel
+
+	Pass Test If Not Support  arbel-evb
+	Copy Data To BMC  ${DIR_SCRIPT}/${BOARD}/${CPLD_READID}  /tmp
+
+	${start}=  Get Time  epoch
+	${stress_time_sec}=  Convert Time  ${STRESS_TIME}
+	Rprint Vars  stress_time_sec
+	${cmd}=  Catenate  loadsvf -d /dev/${JTAG_DEV} -s /tmp/${CPLD_READID}
+	FOR  ${count}  IN RANGE  1  99999
+		${output}  ${stderr}  ${rc}=  BMC Execute Command  ${cmd}  quiet=1
+		Should Not Contain  ${stderr}  tdo check error
 		${now}=  Get Time  epoch
 		${diff}=  Evaluate  ${now} - ${start}
 		Exit For Loop If    ${diff} > ${stress_time_sec}
@@ -319,7 +342,7 @@ Test Hello World
 *** Keywords ***
 Test Script And Verify
     [Documentation]  run test script and check result
-    [Arguments]  ${script}  @{BOARDS}
+    [Arguments]  ${script}  @{BOARDS}  ${quiet}=0
 
     # Description of argument(s):
     # ${script}    test script path
@@ -328,7 +351,7 @@ Test Script And Verify
     Pass Test If Not Support  @{BOARDS}
     Copy Data To BMC  ${DIR_SCRIPT}/${BOARD}/${script}    /tmp
     ${stdout}  ${stderr}  ${rc}=
-    ...  BMC Execute Command  /bin/bash /tmp/${script}
+    ...  BMC Execute Command  /bin/bash /tmp/${script}  quiet=${quiet}
     Should Be Empty  ${stderr}
     Should Not Be Empty  ${stdout}  msg=Must print information during run script
     Should Be Equal    ${rc}    ${0}
