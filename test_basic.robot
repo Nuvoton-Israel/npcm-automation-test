@@ -89,24 +89,39 @@ I3C Stress Test
 	[Documentation]  I3C stress test
 	[Tags]  Stress Test  Onboard  HWsetup  I3C  Arbel
 
-	FOR  ${count}  IN RANGE  1  ${STRESS_LOOP_COUNT}
+	${start}=  Get Time  epoch
+	${stress_time_sec}=  Convert Time  ${STRESS_TIME}
+	FOR  ${count}  IN RANGE  1  99999
 		Test Script And Verify  ${I3C_SCRIPT}  arbel-evb
+		${now}=  Get Time  epoch
+		${diff}=  Evaluate  ${now} - ${start}
+		Exit For Loop If    ${diff} > ${stress_time_sec}
 	END
 
 AES Stress Test
 	[Documentation]  AES stress test
 	[Tags]  Stress Test  Onboard  HWsetup  AES
 
-	FOR  ${count}  IN RANGE  1  ${STRESS_LOOP_COUNT}
+	${start}=  Get Time  epoch
+	${stress_time_sec}=  Convert Time  ${STRESS_TIME}
+	FOR  ${count}  IN RANGE  1  99999
 		Test Script And Verify  ${AES_SCRIPT}  @{BOARD_SUPPORTED}
+		${now}=  Get Time  epoch
+		${diff}=  Evaluate  ${now} - ${start}
+		Exit For Loop If    ${diff} > ${stress_time_sec}
 	END
 
 PSPI Stress Test
 	[Documentation]  PSPI stress test
 	[Tags]  Stress Test  Onboard  HWsetup  PSPI
 
-	FOR  ${count}  IN RANGE  1  ${STRESS_LOOP_COUNT}
+	${start}=  Get Time  epoch
+	${stress_time_sec}=  Convert Time  ${STRESS_TIME}
+	FOR  ${count}  IN RANGE  1  99999
 		Test Script And Verify  ${PSPI_SCRIPT}  @{BOARD_SUPPORTED}
+		${now}=  Get Time  epoch
+		${diff}=  Evaluate  ${now} - ${start}
+		Exit For Loop If    ${diff} > ${stress_time_sec}
 	END
 
 CPU Stress Test
