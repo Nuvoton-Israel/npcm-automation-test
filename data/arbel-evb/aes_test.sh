@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-log_file="/tmp/aes_test.log"
+log_file="/tmp/log/aes_test.log"
 
 # generate a random password
 openssl rand -hex 4 > /tmp/aes.pass
@@ -22,5 +22,6 @@ rm /tmp/plaintext >& /dev/null
 rm /tmp/plaintext2 >& /dev/null
 rm /tmp/aes.pass >& /dev/null
 
+echo "PASS" >> $log_file
 echo "PASS"
 exit 0

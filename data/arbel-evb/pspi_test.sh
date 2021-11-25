@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-log_file="/tmp/pspi_test.log"
+log_file="/tmp/log/pspi_test.log"
 
 mtd_info=`cat /proc/mtd | grep spi1_spare0`
 arr=(${mtd_info//:/ })
@@ -24,4 +24,5 @@ diff /tmp/pspi_test.img /tmp/pspi_test_out.img >> $log_file
 rm /tmp/pspi_test_out.img
 
 echo "PASS" >> $log_file
+echo "PASS"
 exit 0
