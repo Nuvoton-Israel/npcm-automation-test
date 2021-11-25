@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-log_file="/tmp/i3c_test.log"
+log_file="/tmp/log/i3c_test.log"
 
 # attach LSM6DSO to i3c bus#1
 
@@ -17,4 +17,5 @@ echo "pid=$pid" >> $log_file
 test $pid == 208006c100b
 
 echo "PASS" >> $log_file
+echo "PASS"
 exit 0
