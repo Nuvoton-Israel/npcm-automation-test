@@ -174,7 +174,7 @@ do
 	echo  >> $log_file
 	echo "timestamp = $run_end_time sec">> $log_file
 	echo $iperf_cmd >> $log_file
-	cat $tmp_file | tee -a $log_file
+	cat $tmp_file >> $log_file
 	### end of updating log file
 
 done
