@@ -3,7 +3,7 @@
 if [ -z "$1" ]
   then
 	#using only one thread , after 24h run the maximal rms reach 0.000996
-	threshold=0.001
+	threshold=0.0012
     echo "rng test is using default threshold = $threshold"
   else
     echo "usage :rng_stress.sh threshold"
