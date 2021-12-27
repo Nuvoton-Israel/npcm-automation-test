@@ -26,9 +26,18 @@ ${I3C_SCRIPT}		i3c_test.sh
 ${FIU_SCRIPT}		fiu_test.sh
 ${AES_SCRIPT}		aes_test.sh
 ${PSPI_SCRIPT}		pspi_test.sh
+${SGPIO_SCRIPT}		sgpio_test.sh
 ${ignore_err}		${0}
 
 *** Test Cases ***
+SGPIO Unit Test
+	[Documentation]  SGPIO test
+	[Tags]  Basic  Onboard  HWsetup  SGPIO
+	[Template]  Test Script And Verify
+
+	# script
+	${SGPIO_SCRIPT}  @{BOARD_SUPPORTED}
+
 PSPI Unit Test
 	[Documentation]  PSPI test
 	[Tags]  Basic  Onboard  HWsetup  PSPI
