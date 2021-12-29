@@ -183,10 +183,10 @@ Mount SPI Folder
     # in currnet DTS, SPI2.0 MTD(0~5) SPI2.1 MTD(6~7) SPI3.0 MTD(8)
 
     ${folder}=  Remove String  ${device}  block
-    ${folder}=  Set Variable  /mnt/flash/${folder}
+    ${folder}=  Set Variable  /var/flash/${folder}
     Log  Mount point: ${folder}
     Clean Mounted Folder    ${folder}
-    BMC Execute Command    mkdir -vp ${folder}  ignore_err=${1}
+    BMC Execute Command    mkdir -vp ${folder}
     # note, BMC Execute Command will report error if rc != 0 unless we set ignore_err
     ${cmd}=  Catenate  mount -t jffs2 /dev/${device}  ${folder}
     BMC Execute Command  ${cmd}
@@ -199,10 +199,10 @@ Mount USB Folder
     # Description of argument(s):
     # ${device}     the USB storage device, like sda1
 
-    ${folder}=  Set Variable  /mnt/usb/p1
+    ${folder}=  Set Variable  /var/usb/p1
     Log  Mount point: ${folder}
     Clean Mounted Folder    ${folder}
-    BMC Execute Command    mkdir -vp ${folder}  ignore_err=${1}
+    BMC Execute Command    mkdir -vp ${folder}
     ${cmd}=  Catenate  mount -t ext4 /dev/${device}  ${folder}
     BMC Execute Command  ${cmd}
     [Return]  ${folder}
@@ -214,7 +214,7 @@ Mount EMMC Folder
     # Description of argument(s):
     # ${device}     the eMMC flash device, like mmcblk0p1
 
-    ${folder}=  Set Variable  /mnt/emmc/p1
+    ${folder}=  Set Variable  /var/emmc/p1
     Log  Mount point: ${folder}
     Clean Mounted Folder    ${folder}
     BMC Execute Command    mkdir -vp ${folder}  ignore_err=${1}
@@ -231,9 +231,9 @@ Prepare Mount Folder
     # ${device}     the device name, which can be access under /dev/
     #
     # mount ex: eMMC/SPI/USB
-    # mount -t jffs2 /dev/mtdblock6 /mnt/flash/mtd6
-    # mount -t ext4 /dev/mmcblk0p1 /mnt/emmc/p1
-    # mount -t vfat /dev/sda1 /mnt/usb/p1
+    # mount -t jffs2 /dev/mtdblock6 /var/flash/mtd6
+    # mount -t ext4 /dev/mmcblk0p1 /var/emmc/p1
+    # mount -t vfat /dev/sda1 /var/usb/p1
     Should Not Be Empty  ${device}
     Set Test Variable  ${MOUNT_FOLDER}  ${EMPTY}
     ${folder}=  Run Keyword If  '${flash}' == 'spi'
@@ -349,6 +349,7 @@ Net Test Teardown
 
     Get Net Test State information
     PC Kill Process By name    iperf
+    Collect Log On Test Case Fail
 
 Get Storage Test State information
     [Documentation]  get storage test speed information
@@ -370,6 +371,7 @@ Storage Test Teardown
 
     Clean Mounted Folder  ${MOUNT_FOLDER}
     Get Storage Test State information
+    Collect Log On Test Case Fail
 
 Simple Get Test State information
     [Documentation]  get simple test run information

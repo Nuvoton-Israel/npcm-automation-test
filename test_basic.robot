@@ -256,7 +256,7 @@ FIU Stress Test
 	# flash_eraseall -j /dev/mtd8
 	# and this will take such long time, should we erase it everytime?
 	${folder}=  Prepare Mount Folder  flash=spi  device=${SPI_DEV}
-	${tmp_folder}=  Replace String  ${folder}  mnt  tmp
+	${tmp_folder}=  Replace String  ${folder}  var  tmp
 	Log  test folders ${folder} ${tmp_folder}
 	Run Stress Test Script And Verify  -1  4000  8000  2  6
 	...  ${folder}  ${tmp_folder}  2  0
@@ -277,10 +277,10 @@ EMMC Stress Test
 	# fdisk /dev/mmcblk0, n, p, 1, \n, \n, w
 	# mkfs.ext4 /dev/mmcblk0p1
 	${folder}=  Prepare Mount Folder  flash=emmc  device=${MMC_DEV}
-	${tmp_folder}=  Replace String  ${folder}  mnt  tmp
+	${tmp_folder}=  Replace String  ${folder}  var  tmp
 	Log  test folders ${folder} ${tmp_folder}
-	Run Stress Test Script And Verify  -1  4000  8000  5  10
-	...  ${folder}  ${tmp_folder}  100  0  0x100000
+	Run Stress Test Script And Verify  -1  4000  8000  2  6
+	...  ${folder}  ${tmp_folder}  10  0  0x80000
 	...  script=${DD_SCRIPT}
 	Sleep  3
 	#Unmount Folder  ${folder}
@@ -295,7 +295,7 @@ USB Host Stress Test
 
 	# Note. we should format and partition flash before mount it!
 	${folder}=  Prepare Mount Folder  flash=usb  device=${USB_DEV}
-	${tmp_folder}=  Replace String  ${folder}  mnt  tmp
+	${tmp_folder}=  Replace String  ${folder}  var  tmp
 	Log  test folders ${folder} ${tmp_folder}
 	Run Stress Test Script And Verify  -1  4000  8000  5  10
 	...  ${folder}  ${tmp_folder}  100  0  0x100000
@@ -323,7 +323,7 @@ I2C Slave EEPROM Stress Test
 	Run Stress Test Script And Verify
 	...  ${I2C_MASTER}  ${I2C_SALVE}  ${I2C_EEPROM_ADDR}
 	...  script=${I2C_SCRIPT}
-	[Teardown]  Simple Get Test State information
+	[Teardown]  Run Keywords  Simple Get Test State information  Collect Log On Test Case Fail
 
 Test Hello World
 	[Documentation]  Hello world

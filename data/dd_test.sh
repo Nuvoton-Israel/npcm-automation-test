@@ -195,12 +195,12 @@ do
 
 	done
 
-	rm $6/*
+	rm $6/bigfile*
 
 	wait
 
 	loop_num=$(($loop_num + 1))
-	echo "dd_stress.$created_file_suffix loop = $loop_num"
+	#echo "dd_stress.$created_file_suffix loop = $loop_num"
 
 
 done
