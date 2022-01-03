@@ -123,6 +123,20 @@ AES Stress Test
 		Exit For Loop If    ${diff} > ${stress_time_sec}
 	END
 
+SGPIO Stress Test
+	[Documentation]  SGPIO stress test
+	[Tags]  Stress Test  Onboard  HWsetup  SGPIO
+
+	${start}=  Get Time  epoch
+	${stress_time_sec}=  Convert Time  ${STRESS_TIME}
+	Rprint Vars  stress_time_sec
+	FOR  ${count}  IN RANGE  1  99999
+		Test Script And Verify  ${SGPIO_SCRIPT}  @{BOARD_SUPPORTED}  quiet=1
+		${now}=  Get Time  epoch
+		${diff}=  Evaluate  ${now} - ${start}
+		Exit For Loop If    ${diff} > ${stress_time_sec}
+	END
+
 PSPI Stress Test
 	[Documentation]  PSPI stress test
 	[Tags]  Stress Test  Onboard  HWsetup  PSPI
