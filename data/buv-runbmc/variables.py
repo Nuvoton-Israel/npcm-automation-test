@@ -11,6 +11,7 @@ NET_SECONDARY_INTF = ["eth0"]
 NET_SECONDARY_THR = ["60"]
 # Storage
 SPI_DEV = "mtdblock8"
+USB_DEV = "sda6"
 # GPIO pin pairs, [[out, in], [out, in], ...]
 GPIO_PINS = ["6", "5", "4", "7", "22", "23"]
 # ADC

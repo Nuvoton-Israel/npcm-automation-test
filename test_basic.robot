@@ -293,8 +293,8 @@ EMMC Stress Test
 	${folder}=  Prepare Mount Folder  flash=emmc  device=${MMC_DEV}
 	${tmp_folder}=  Replace String  ${folder}  var  tmp
 	Log  test folders ${folder} ${tmp_folder}
-	Run Stress Test Script And Verify  -1  4000  8000  2  6
-	...  ${folder}  ${tmp_folder}  10  0  0x80000
+	Run Stress Test Script And Verify  -1  4000  8000  4  10
+	...  ${folder}  ${tmp_folder}  10  0  0x100000
 	...  script=${DD_SCRIPT}
 	Sleep  3
 	#Unmount Folder  ${folder}

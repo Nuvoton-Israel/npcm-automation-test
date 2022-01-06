@@ -189,7 +189,7 @@ Mount SPI Folder
     BMC Execute Command    mkdir -vp ${folder}
     # note, BMC Execute Command will report error if rc != 0 unless we set ignore_err
     ${cmd}=  Catenate  mount -t jffs2 /dev/${device}  ${folder}
-    BMC Execute Command  ${cmd}
+    BMC Execute Command  ${cmd}  timeout=10
     [Return]  ${folder}
 
 Mount USB Folder
@@ -204,7 +204,7 @@ Mount USB Folder
     Clean Mounted Folder    ${folder}
     BMC Execute Command    mkdir -vp ${folder}
     ${cmd}=  Catenate  mount -t ext4 /dev/${device}  ${folder}
-    BMC Execute Command  ${cmd}
+    BMC Execute Command  ${cmd}  timeout=10
     [Return]  ${folder}
 
 Mount EMMC Folder
@@ -217,9 +217,9 @@ Mount EMMC Folder
     ${folder}=  Set Variable  /var/emmc/p1
     Log  Mount point: ${folder}
     Clean Mounted Folder    ${folder}
-    BMC Execute Command    mkdir -vp ${folder}  ignore_err=${1}
+    BMC Execute Command    mkdir -vp ${folder}
     ${cmd}=  Catenate  mount -t ext4 /dev/${device}  ${folder}
-    BMC Execute Command  ${cmd}
+    BMC Execute Command  ${cmd}  timeout=10
     [Return]  ${folder}
 
 Prepare Mount Folder

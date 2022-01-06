@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 if [ -z "$8" ]
   then

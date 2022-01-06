@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 if [ -z "$3" ] ; then
     echo "usage:  sh `basename $0` <master bus> <slave bus> <slave address>"
