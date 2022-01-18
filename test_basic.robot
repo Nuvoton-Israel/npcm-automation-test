@@ -27,9 +27,18 @@ ${FIU_SCRIPT}		fiu_test.sh
 ${AES_SCRIPT}		aes_test.sh
 ${PSPI_SCRIPT}		pspi_test.sh
 ${SGPIO_SCRIPT}		sgpio_test.sh
+${SHA_SCRIPT}		sha_test.sh
 ${ignore_err}		${0}
 
 *** Test Cases ***
+SHA Unit Test
+	[Documentation]  SHA test
+	[Tags]  Basic  Onboard  HWsetup  SHA
+	[Template]  Test Script And Verify
+
+	# script
+	${SHA_SCRIPT}  @{BOARD_SUPPORTED}
+
 SGPIO Unit Test
 	[Documentation]  SGPIO test
 	[Tags]  Basic  Onboard  HWsetup  SGPIO
@@ -93,6 +102,20 @@ TMPS Unit Test
 
 	# script
 	${TMPS_SCRIPT}  arbel-evb
+
+SHA Stress Test
+	[Documentation]  SHA stress test
+	[Tags]  Stress Test  Onboard  HWsetup  SHA
+
+	${start}=  Get Time  epoch
+	${stress_time_sec}=  Convert Time  ${STRESS_TIME}
+	Rprint Vars  stress_time_sec
+	FOR  ${count}  IN RANGE  1  99999
+		Test Script And Verify  ${SHA_SCRIPT}  @{BOARD_SUPPORTED}  quiet=1
+		${now}=  Get Time  epoch
+		${diff}=  Evaluate  ${now} - ${start}
+		Exit For Loop If    ${diff} > ${stress_time_sec}
+	END
 
 I3C Stress Test
 	[Documentation]  I3C stress test
