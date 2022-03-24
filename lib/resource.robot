@@ -29,8 +29,8 @@ ${DIR_STAT}         /tmp/log
                     ...  head  tr  awk  cut  sed  md5sum  taskset
                     ...  fdisk  mke2fs  sleep  pgrep
 ${SPI_DEV}          ${EMPTY}
-${MMC_DEV}          mmcblk0p1
-${USB_DEV}          sda1  # the USB mass storage on DUT
+${MMC_DEV}          ${EMPTY}
+${USB_DEV}          ${EMPTY}  # the USB mass storage on DUT
 ${UDC_DEV}          sdb1  # the USB mass storage on PC
 ${I2C_MASTER}       ${EMPTY}  # the i2c master bus
 ${I2C_SALVE}        ${EMPTY}  # the i2c slave bus
