@@ -28,6 +28,8 @@ ${AES_SCRIPT}		aes_test.sh
 ${PSPI_SCRIPT}		pspi_test.sh
 ${SGPIO_SCRIPT}		sgpio_test.sh
 ${SHA_SCRIPT}		sha_test.sh
+${TPM_SCRIPT}		tpm_test.sh
+${CERBERUS_SCRIPT}	cerberus_test.sh
 ${ignore_err}		${0}
 
 *** Test Cases ***
@@ -102,6 +104,22 @@ TMPS Unit Test
 
 	# script
 	${TMPS_SCRIPT}  arbel-evb
+
+TPM Unit Test
+	[Documentation]  TPM test
+	[Tags]  Basic  Onboard  HWsetup  TPM
+	[Template]  Test Script And Verify
+
+	# script
+	${TPM_SCRIPT}  @{BOARD_SUPPORTED}
+
+Cerberus Unit Test
+	[Documentation]  Cerberus test
+	[Tags]  Basic  Onboard  HWsetup  Cerberus
+	[Template]  Test Script And Verify
+
+	# script
+	${CERBERUS_SCRIPT}  @{BOARD_SUPPORTED}
 
 SHA Stress Test
 	[Documentation]  SHA stress test
@@ -361,6 +379,34 @@ I2C Slave EEPROM Stress Test
 	...  ${I2C_MASTER}  ${I2C_SALVE}  ${I2C_EEPROM_ADDR}
 	...  script=${I2C_SCRIPT}
 	[Teardown]  Run Keywords  Simple Get Test State information  Collect Log On Test Case Fail
+
+TPM Stress Test
+	[Documentation]  TPM stress test
+	[Tags]  Stress Test  Onboard  HWsetup  TPM
+
+	${start}=  Get Time  epoch
+	${stress_time_sec}=  Convert Time  ${STRESS_TIME}
+	Rprint Vars  stress_time_sec
+	FOR  ${count}  IN RANGE  1  99999
+		Test Script And Verify  ${TPM_SCRIPT}  @{BOARD_SUPPORTED}  quiet=1
+		${now}=  Get Time  epoch
+		${diff}=  Evaluate  ${now} - ${start}
+		Exit For Loop If    ${diff} > ${stress_time_sec}
+	END
+
+Cerberus Stress Test
+	[Documentation]  Cerberus stress test
+	[Tags]  Stress Test  Onboard  HWsetup  Cerberus
+
+	${start}=  Get Time  epoch
+	${stress_time_sec}=  Convert Time  ${STRESS_TIME}
+	Rprint Vars  stress_time_sec
+	FOR  ${count}  IN RANGE  1  99999
+		Test Script And Verify  ${CERBERUS_SCRIPT}  @{BOARD_SUPPORTED}  quiet=1
+		${now}=  Get Time  epoch
+		${diff}=  Evaluate  ${now} - ${start}
+		Exit For Loop If    ${diff} > ${stress_time_sec}
+	END
 
 Test Hello World
 	[Documentation]  Hello world

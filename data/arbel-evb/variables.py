@@ -14,8 +14,8 @@ NET_SECONDARY_THR = ["60", "550"]
 SPI_DEV = "mtdblock7"
 MMC_DEV = "mmcblk0p6"
 USB_DEV = "sda6"
-# GPIO, SMB18, J4
-GPIO_PINS = ["0", "1"]
+# GPIO, SMB18, J4, in linux 6.6, gpio num should add 512 (GPIO_DYNAMIC_BASE=512)
+GPIO_PINS = ["512", "513"]
 # ADC
 ADC_CHANNEL = "5"
 ADC_REF_VOLT = "1.2"
