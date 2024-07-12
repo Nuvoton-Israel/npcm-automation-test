@@ -211,6 +211,25 @@ JTAGM Stress Test
 		Exit For Loop If    ${diff} > ${stress_time_sec}
 	END
 
+JTAGM Program CPLD Test
+	[Documentation]  Test Program CPLD.
+	[Tags]  Stress Test  Onboard  HWsetup  JTAGM  Arbel
+
+	Pass Test If Not Support  arbel-evb
+	Copy Data To BMC  ${DIR_SCRIPT}/${BOARD}/${PROGRAM_CPLD}  /tmp
+
+	${start}=  Get Time  epoch
+	${stress_time_sec}=  Convert Time  ${STRESS_TIME}
+	Rprint Vars  stress_time_sec
+	${cmd}=  Catenate  loadsvf -d /dev/${JTAG_DEV} -s /tmp/${PROGRAM_CPLD}
+	FOR  ${count}  IN RANGE  1  99999
+		${output}  ${stderr}  ${rc}=  BMC Execute Command  ${cmd}  quiet=1
+		Should Not Contain  ${stderr}  tdo check error
+		${now}=  Get Time  epoch
+		${diff}=  Evaluate  ${now} - ${start}
+		Exit For Loop If    ${diff} > ${stress_time_sec}
+	END
+
 CPU Stress Test
 	[Documentation]  CPU stress test by running drystone
 	[Tags]  Stress Test  Onboard  CPU
