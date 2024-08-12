@@ -101,4 +101,9 @@ do
 
 
 done
+
+#Unexport gpios
+echo $7 > /sys/class/gpio/unexport 2> /dev/null
+echo $8 > /sys/class/gpio/unexport 2> /dev/null
+
 sync

@@ -30,6 +30,7 @@ ${SGPIO_SCRIPT}		sgpio_test.sh
 ${SHA_SCRIPT}		sha_test.sh
 ${TPM_SCRIPT}		tpm_test.sh
 ${CERBERUS_SCRIPT}	cerberus_test.sh
+${SSIF_SCRIPT}          ssif_test.sh
 ${ignore_err}		${0}
 
 *** Test Cases ***
@@ -120,6 +121,14 @@ Cerberus Unit Test
 
 	# script
 	${CERBERUS_SCRIPT}  @{BOARD_SUPPORTED}
+
+SSIF Unit Test
+	[Documentation]  SSIF test
+	[Tags]  Basic  Onboard  HWsetup  SSIF
+
+	Copy Data To BMC  ${DIR_SCRIPT}/${SSIF_SCRIPT}  /tmp
+	${cmd}=  Catenate  /bin/bash /tmp/${SSIF_SCRIPT}
+	BMC Execute Command  ${cmd}  quiet=1
 
 SHA Stress Test
 	[Documentation]  SHA stress test
