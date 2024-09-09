@@ -31,7 +31,9 @@ ${SHA_SCRIPT}		sha_test.sh
 ${TPM_SCRIPT}		tpm_test.sh
 ${CERBERUS_SCRIPT}	cerberus_test.sh
 ${SSIF_SCRIPT}          ssif_test.sh
+${UPDATE_BIC_SCRIPT}	update_bic.sh
 ${ignore_err}		${0}
+${CMD_SetupEndpoint}	busctl call xyz.openbmc_project.MCTP /xyz/openbmc_project/mctp au.com.CodeConstruct.MCTP SetupEndpoint say "mctpi3c0" 6 0x06 0x32 0x12 0x34 0x56 0x07
 
 *** Test Cases ***
 SHA Unit Test
@@ -431,6 +433,44 @@ Cerberus Stress Test
 	Rprint Vars  stress_time_sec
 	FOR  ${count}  IN RANGE  1  99999
 		Test Script And Verify  ${CERBERUS_SCRIPT}  @{BOARD_SUPPORTED}  quiet=1
+		${now}=  Get Time  epoch
+		${diff}=  Evaluate  ${now} - ${start}
+		Exit For Loop If    ${diff} > ${stress_time_sec}
+	END
+
+UPDATE BIC Test
+	[Documentation]  Test Update BIC over PLDM over MCTP over I3C.
+	[Tags]  Stress Test  Onboard  HWsetup  I3C  Arbel
+
+	Pass Test If Not Support  arbel-evb
+	Copy Data To BMC  ${DIR_SCRIPT}/${BOARD}/${PLDM_IMAGE}  /tmp
+
+	${cmd}=  Catenate  mctp link set mctpi3c0 net 10
+	BMC Execute Command  ${cmd}
+
+	${cmd}=  Catenate  mctp addr add 0x8 dev mctpi3c0
+	BMC Execute Command  ${cmd}
+
+	${cmd}=  Catenate  mctp link set mctpi3c0 up
+	BMC Execute Command  ${cmd}
+
+	${cmd}=  Catenate  ${CMD_SetupEndpoint}
+	BMC Execute Command  ${cmd}
+
+	${cmd}=  Catenate  systemctl stop xyz.openbmc_project.Software.Version
+	BMC Execute Command  ${cmd}
+
+	${cmd}=  Catenate  systemctl stop pldmd
+	BMC Execute Command  ${cmd}
+
+	${cmd}=  Catenate  pldmd -x 10 &
+	BMC Execute Command  ${cmd}
+
+	${start}=  Get Time  epoch
+	${stress_time_sec}=  Convert Time  ${STRESS_TIME}
+	Rprint Vars  stress_time_sec
+	FOR  ${count}  IN RANGE  1  99999
+		Test Script And Verify  ${UPDATE_BIC_SCRIPT}  @{BOARD_SUPPORTED}  quiet=1
 		${now}=  Get Time  epoch
 		${diff}=  Evaluate  ${now} - ${start}
 		Exit For Loop If    ${diff} > ${stress_time_sec}
