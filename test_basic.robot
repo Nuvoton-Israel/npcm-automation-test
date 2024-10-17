@@ -327,7 +327,7 @@ FIU Stress Test
 	# Mount SPI  mtdn
 	# @{args}:
 	# example -1  4000  8000  2  6  /mnt/flash/mtd6  /tmp/flash/mtd6  2  0
-	# -1 => unlimt execute
+	# -1 => unlimit execute
 	# [4000  8000] => the test delay ms range
 	# [2  6] => the test file count number range
 	# /mnt/flash/mtd6 => the flash mounted path
@@ -480,7 +480,8 @@ Basic Suite Setup
     [Documentation]  this basic test suite setup function
 
 	Load Board Variables
-	Check DUT Environment  @{TEST_TOOLS}
+	Run Keyword If  '${CHECK_TOOLS}' == '${True}'
+	...  Check DUT Environment  @{TEST_TOOLS}
 
 Secondary Interface Net Stress Test
     [Documentation]  run ethernet secondary interface test

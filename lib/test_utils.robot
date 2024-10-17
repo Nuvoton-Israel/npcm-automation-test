@@ -155,7 +155,7 @@ Start Remote Iperf Server
     PC Execute Command  iperf3 -s      fork=${1}
     ...  ip=${IPERF_SERVER}  user=${IPERF_USER}  passwd=${IPERF_PASSWD}
     Sleep  1
-    # make fail if cannot start iperf server
+    # trigger fail if cannot start iperf server
     PC Execute Command  pgrep iperf3
     ...  ip=${IPERF_SERVER}  user=${IPERF_USER}  passwd=${IPERF_PASSWD}
 

@@ -24,6 +24,7 @@ ${PLATFORM}         poleg
 ${BOARD}            buv-runbmc
 @{BOARD_SUPPORTED}  buv-runbmc  arbel-evb
 ${DIR_STAT}         /tmp/log
+${CHECK_TOOLS}      ${False}
 @{TEST_TOOLS}       timeout  ent  iperf3  wr_perf_test  rd_perf_test
                     ...  cc_dry2  i2cdetect  i2cset  i2cget  i2ctransfer
                     ...  head  tr  awk  cut  sed  md5sum  taskset
