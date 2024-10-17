@@ -13,9 +13,13 @@ import os
 from robot.libraries.BuiltIn import BuiltIn
 import sys
 import os
-import imp
-base_path = os.path.dirname(os.path.dirname(
-                            imp.find_module("gen_robot_print")[1])) + os.sep
+import importlib.util
+
+base_path = (
+    os.path.dirname(os.path.dirname(importlib.util.find_spec("gen_robot_print").origin))
+    + os.sep
+)
+
 sys.path.append(base_path + "data/")
 import variables as var
 

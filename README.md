@@ -6,30 +6,23 @@ Users can reference the following links to understand the package we used.
 * [OpenBMC Test Automation Setup Guide](https://github.com/openbmc/openbmc-test-automation#installation-setup-guide)
 
 ### Build environment example ###
-For manager the python package dependencies, there is a convenience program Conda we used.
-* https://docs.conda.io/en/latest/miniconda.html
+For manager the python environment, there is a convenience program venv we can use.
+* https://docs.python.org/3/library/venv.html
 
-The following install intruction example will use Conda to setup environment.
-User can install Conda by [Conda installing document](https://docs.anaconda.com/anaconda/install/).
+```bash
+# install python3-venv
+sudo apt instll python3-venv
 
-After check your OS version , you can pick up one conda installers to start.
-For example we use Ubuntu 18.04:
-```
-# install conda
-wget https://repo.anaconda.com/miniconda/Miniconda3-py39_4.10.3-Linux-x86_64.sh
-sha256sum Miniconda3-py39_4.10.3-Linux-x86_64.sh
-bash Miniconda3-py39_4.10.3-Linux-x86_64.sh
+# create env
+python3 -m venv ~/venv/bmc
 
-# please check your conda already initialized, you can create new bash shell or source <path to conda>/bin/activate
-
-# create conda env
-conda create -n bmc python=3
-conda activate bmc
+# activate env and install python packages
+source ~/venv/bmc/bin/activate
 pip install redfish==3 robotframework==4
 pip install -U requests robotframework-httplibrary robotframework-requests robotframework-scplibrary robotframework-sshlibrary
 
 # use the environment we create before run robot test
-conda activate bmc
+source ~/venv/bmc/bin/activate
 ```
 
 
