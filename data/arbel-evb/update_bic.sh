@@ -49,9 +49,10 @@ pldm_wait_for_update_complete() {
 
 update_bic() {
 
-	bic_eid="${2}"
-	bic_netid="${3}"
-	cp "$1" /tmp/images
+	image="${1}"
+	bic_netid="${2}"
+	bic_eid="${3}"
+	cp "${image}" /tmp/images
 	sleep 3
 
 	echo "Generating software ID..."
@@ -66,7 +67,7 @@ update_bic() {
 			killall pldmd
 			pldmd -x ${bic_netid} &
 			sleep 1
-			update_bic "Y35NPCM_signed_with_header.bin" 10 10
+			update_bic ${image} ${bic_netid} ${bic_eid}
 		fi
 
 		busctl set-property xyz.openbmc_project.PLDM /xyz/openbmc_project/software/"$software_id" xyz.openbmc_project.Software.Activation RequestedActivation s "xyz.openbmc_project.Software.Activation.RequestedActivations.Active" >& $log_file
@@ -91,15 +92,15 @@ update_bic() {
 		echo "BMC send DISCOVERY"
 		echo 1 > /sys/bus/i3c/devices/i3c-0/discover
 		sleep 1
-		update_bic "Y35NPCM_signed_with_header.bin" 10 10
+		update_bic ${image} ${bic_netid} ${bic_eid}
 	fi
 }
 
 echo "Start to Update PLDM component" > $log_file
 
 sleep 1
-
-update_bic Y35NPCM_signed_with_header.bin 10 10
+cd /tmp/
+update_bic SMCNPCM_signed_with_header.bin 1 10
 ret=$?
 if [ $ret -ne 0 ]; then
 	echo "pldm update failed!!" >> $log_file
