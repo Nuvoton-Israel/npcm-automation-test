@@ -40,7 +40,7 @@ pldm_wait_for_update_complete() {
 
 		counter=$((counter+2))
 		# Over 12 seconds is considered timeout
-		if [ "${counter}" == 10 ]; then
+		if [ "${counter}" == 12 ]; then
 			echo -ne \\n"Time out. Fail"\\n >> $log_file
 			return $FAIL_TO_UPDATE_PLDM_TIME_OUT_ERROR
 		fi
