@@ -11,7 +11,7 @@ For manager the python environment, there is a convenience program venv we can u
 
 ```bash
 # install python3-venv
-sudo apt instll python3-venv
+sudo apt install python3-venv
 
 # create env
 python3 -m venv ~/venv/bmc
