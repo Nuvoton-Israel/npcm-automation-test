@@ -33,7 +33,7 @@ ${CERBERUS_SCRIPT}	cerberus_test.sh
 ${SSIF_SCRIPT}          ssif_test.sh
 ${UPDATE_BIC_SCRIPT}	update_bic.sh
 ${ignore_err}		${0}
-${CMD_SetupEndpoint}	busctl call au.com.codeconstruct.MCTP1 /au/com/codeconstruct/mctp1/interfaces/mctpi3c0 au.com.codeconstruct.MCTP.BusOwner1 SetupEndpoint ay 6 0x06 0x32 0x12 0x34 0x56 0x07
+
 
 *** Test Cases ***
 SHA Unit Test
@@ -440,19 +440,16 @@ Cerberus Stress Test
 
 UPDATE BIC Test
 	[Documentation]  Test Update BIC over PLDM over MCTP over I3C.
-	[Tags]  Stress Test  Onboard  HWsetup  I3C  Arbel
+	[Tags]  Stress Test  Onboard  HWsetup  I3C  Arbel  BIC
 
 	# update BIC voer mctp over I3C
 	Pass Test If Not Support  arbel-evb
 	Copy Data To BMC  ${DIR_SCRIPT}/${BOARD}/${PLDM_IMAGE}  /tmp
 
-	${cmd}=  Catenate  ${CMD_SetupEndpoint}
-	BMC Execute Command  ${cmd}
-
 	${cmd}=  Catenate  systemctl stop pldmd
 	BMC Execute Command  ${cmd}
 
-	${cmd}=  Catenate  pldmd -x 1 &
+	${cmd}=  Catenate  pldmd &
 	BMC Execute Command  ${cmd}
 
 	${start}=  Get Time  epoch
