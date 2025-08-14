@@ -39,8 +39,8 @@ pldm_wait_for_update_complete() {
 		fi
 
 		counter=$((counter+2))
-		# Over 12 seconds is considered timeout
-		if [ "${counter}" == 12 ]; then
+		# Over 200 seconds is considered timeout
+		if [ "${counter}" == 200 ]; then
 			echo -ne \\n"Time out. Fail"\\n >> $log_file
 			return $FAIL_TO_UPDATE_PLDM_TIME_OUT_ERROR
 		fi
@@ -50,8 +50,7 @@ pldm_wait_for_update_complete() {
 update_bic() {
 
 	image="${1}"
-	bic_netid="${2}"
-	bic_eid="${3}"
+	bic_eid="${2}"
 	cp "${image}" /tmp/images
 	sleep 3
 
@@ -65,9 +64,9 @@ update_bic() {
 			echo "Object /xyz/openbmc_project/software/"$software_id" is stalled in activating"
 			echo "Restarting pldmd to recover it."
 			killall pldmd
-			pldmd -x ${bic_netid} &
+			pldmd &
 			sleep 1
-			update_bic ${image} ${bic_netid} ${bic_eid}
+			update_bic ${image} ${bic_eid}
 		fi
 
 		busctl set-property xyz.openbmc_project.PLDM /xyz/openbmc_project/software/"$software_id" xyz.openbmc_project.Software.Activation RequestedActivation s "xyz.openbmc_project.Software.Activation.RequestedActivations.Active" >& $log_file
@@ -76,10 +75,10 @@ update_bic() {
 
 		if [ $update_status == $FAIL_TO_UPDATE_PLDM_TIME_OUT_ERROR ]; then
 			local output
-			output=$(pldmtool fw_update GetStatus -m ${bic_eid} -x ${bic_netid})
+			output=$(pldmtool fw_update GetStatus -m ${bic_eid})
 			bic_current_state=$(echo "$output" | grep -o '"CurrentState": "[^"]*' | cut -d'"' -f4)
 			if [ "$bic_current_state" = "DOWNLOAD" ]; then
-				pldmtool raw -d 0x80 0x3f 0x1 0x15 0xa0 0x0 0x18 0x03 -m ${bic_eid} -x ${bic_netid}
+				pldmtool raw -d 0x80 0x3f 0x1 0x15 0xa0 0x0 0x18 0x03 -m ${bic_eid}
 				sleep 3 # wait for BIC reset
 				echo "BMC send DISCOVERY"
 				echo 1 > /sys/bus/i3c/devices/i3c-0/discover
@@ -92,7 +91,7 @@ update_bic() {
 		echo "BMC send DISCOVERY"
 		echo 1 > /sys/bus/i3c/devices/i3c-0/discover
 		sleep 1
-		update_bic ${image} ${bic_netid} ${bic_eid}
+		update_bic ${image} ${bic_eid}
 	fi
 }
 
@@ -100,7 +99,7 @@ echo "Start to Update PLDM component" > $log_file
 
 sleep 1
 cd /tmp/
-update_bic SMCNPCM_signed_with_header.bin 1 10
+update_bic SMCNPCM_signed_with_header.bin 10
 ret=$?
 if [ $ret -ne 0 ]; then
 	echo "pldm update failed!!" >> $log_file
