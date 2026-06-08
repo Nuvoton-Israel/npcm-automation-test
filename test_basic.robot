@@ -32,6 +32,9 @@ ${TPM_SCRIPT}		tpm_test.sh
 ${CERBERUS_SCRIPT}	cerberus_test.sh
 ${SSIF_SCRIPT}          ssif_test.sh
 ${UPDATE_BIC_SCRIPT}	update_bic.sh
+${EMMC_TEST_DEVICE}        auto
+${EMMC_TEST_PART_SIZE_MB}  auto
+${EMMC_TEST_BS}            0x100000
 ${ignore_err}		${0}
 
 
@@ -361,11 +364,16 @@ EMMC Stress Test
 	# Note. we should format and partition flash before mount it!
 	# fdisk /dev/mmcblk0, n, p, 1, \n, \n, w
 	# mkfs.ext4 /dev/mmcblk0p1
-	${folder}=  Prepare Mount Folder  flash=emmc  device=${MMC_DEV}
+	${auto_emmc_dev}  ${auto_part_size_mb}=  Get EMMC Test Device And Size
+	${emmc_dev}=  Set Variable If  '${EMMC_TEST_DEVICE}' == 'auto'  ${auto_emmc_dev}  ${EMMC_TEST_DEVICE}
+	${emmc_part_size_mb}=  Set Variable If  '${EMMC_TEST_PART_SIZE_MB}' == 'auto'  ${auto_part_size_mb}  ${EMMC_TEST_PART_SIZE_MB}
+	Log  auto eMMC config: dev=${auto_emmc_dev}, safe_size_mb=${auto_part_size_mb}
+	Log  use eMMC config: dev=${emmc_dev}, size_mb=${emmc_part_size_mb}, bs=${EMMC_TEST_BS}
+	${folder}=  Prepare Mount Folder  flash=emmc  device=${emmc_dev}
 	${tmp_folder}=  Replace String  ${folder}  var  tmp
 	Log  test folders ${folder} ${tmp_folder}
 	Run Stress Test Script And Verify  -1  4000  8000  4  10
-	...  ${folder}  ${tmp_folder}  10  0  0x100000
+	...  ${folder}  ${tmp_folder}  ${emmc_part_size_mb}  0  ${EMMC_TEST_BS}
 	...  script=${DD_SCRIPT}
 	Sleep  3
 	#Unmount Folder  ${folder}

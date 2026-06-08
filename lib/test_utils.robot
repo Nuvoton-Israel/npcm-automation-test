@@ -222,6 +222,25 @@ Mount EMMC Folder
     BMC Execute Command  ${cmd}  timeout=10
     [Return]  ${folder}
 
+Get EMMC Test Device And Size
+    [Documentation]  auto select eMMC test partition and safe stress size in MB
+
+    ${cmd}=  Catenate
+    ...  dev=""; for p in mmcblk0p7 mmcblk0p6 mmcblk0p1; do
+    ...  [ -b /dev/$p ] && dev=$p && break; done;
+    ...  [ -n "$dev" ] || { echo "no eMMC partition found" >&2; exit 1; };
+    ...  size_kb=$(awk -v d="$dev" '$4==d{print $3}' /proc/partitions);
+    ...  [ -n "$size_kb" ] || { echo "cannot read partition size for $dev" >&2; exit 1; };
+    ...  size_mb=$((size_kb / 1024));
+    ...  test_mb=$((size_mb * 85 / 100));
+    ...  [ "$test_mb" -lt 8 ] && test_mb=8;
+    ...  echo "$dev|$test_mb"
+    ${stdout}  ${stderr}  ${rc}=  BMC Execute Command  ${cmd}
+    Should Be Empty  ${stderr}
+    Should Be Equal As Integers  ${rc}  0
+    ${device}  ${size_mb}=  Split String  ${stdout}  |
+    [Return]  ${device}  ${size_mb}
+
 Prepare Mount Folder
     [Documentation]  create folder and mount device
     [Arguments]  ${flash}  ${device}
@@ -468,7 +487,7 @@ Net Stress Test
 	# RGMII_IP => run iperf with bind this IP
 	# IPERF_SERVER  => the iperf server IP address
 	Run Stress Test Script And Verify  -1  1000  2000
-	...  8  12  ${thredshold}  ${IP}  ${IPERF_SERVER}
+    ...  8  12  ${thredshold}  ${IP}  ${IPERF_SERVER}
 	...  script=${Net_SCRIPT}
 	FOR  ${eth}  IN  @{disable_interfaces}
 		Enable Ethernet Interface  ${eth}  ${True}

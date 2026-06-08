@@ -71,6 +71,12 @@ do
 	min_chunk_count=$((($8*1024*1024) / (files_count*BS*1024) + 1))
 	max_chunk_count=$((($8*1024*1024) / (files_count*BS) -2))
 
+	if [ "$max_chunk_count" -le 0 ]; then
+		echo "ERROR: max_chunk_count=$max_chunk_count <= 0. Partition size ($8 MB) too small for BS=$BS and files_count=$files_count" >> $log_file
+		echo "ERROR: max_chunk_count=$max_chunk_count <= 0. Partition size ($8 MB) too small for BS=$BS and files_count=$files_count"
+		exit 1
+	fi
+
 	for I in `seq 1 $files_count`;
 	do
 
