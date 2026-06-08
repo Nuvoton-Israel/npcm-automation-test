@@ -2,9 +2,20 @@
 set -e
 log_file="/tmp/log/pspi_test.log"
 
-mtd_info=`cat /proc/mtd | grep spi1_spare0`
-arr=(${mtd_info//:/ })
-devpath="/dev/${arr[0]}"
+find_mtd_dev() {
+	# support both legacy and newer DTS naming conventions
+	awk -F'[:"]' '$2 == "spi1_spare0" || $2 == "spi1-spare0" {print $1; exit}' /proc/mtd
+}
+
+mtd_dev="$(find_mtd_dev)"
+if [ -z "$mtd_dev" ]; then
+	echo "Cannot find PSPI target partition in /proc/mtd" > "$log_file"
+	cat /proc/mtd >> "$log_file"
+	echo "FAIL: cannot find PSPI target partition"
+	exit 1
+fi
+
+devpath="/dev/${mtd_dev}"
 echo "pspi=$devpath"
 
 PSPI_TEST_READY=/tmp/pspi_stress_test_ready
