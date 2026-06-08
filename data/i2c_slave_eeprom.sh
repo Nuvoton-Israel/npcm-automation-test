@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -u
 
 if [ -z "$3" ] ; then
     echo "usage:  sh `basename $0` <master bus> <slave bus> <slave address>"
@@ -25,6 +25,8 @@ i2c_slave_addr="$3"
 i2c_slave_dev_addr=0x10${i2c_slave_addr#0x}
 test_bin=/tmp/i2c_slave_rw
 
+mkdir -p "$BASEDIR/log"
+
 echo "Statefile: $results_log_file"
 echo -e "i2c_master=$i2c_master\ni2c_slave=$i2c_slave\ni2c_slave_addr=$i2c_slave_addr" > $run_log
 echo "test_bin=$test_bin" >> $run_log
@@ -47,7 +49,7 @@ fi
 # export i2c slave eeprom
 cmd="2>&1 echo slave-24c02 ${i2c_slave_dev_addr} > /sys/bus/i2c/devices/i2c-${slave_bus}/new_device"
 echo "$cmd" >> $run_log
-res=`2>&1 echo slave-24c02 ${i2c_slave_dev_addr} > /sys/bus/i2c/devices/i2c-${slave_bus}/new_device`
+res=$(sh -c "echo slave-24c02 ${i2c_slave_dev_addr} > /sys/bus/i2c/devices/i2c-${slave_bus}/new_device" 2>&1)
 if [ "$?" != 0 -o -n "$res" ];then
     # collect i2c device to log
     ls /sys/bus/i2c/devices >> $run_log
@@ -72,8 +74,8 @@ do
     result_log=PASS
     cmd="${test_bin} -d ${i2c_master} -a ${i2c_slave_addr} -i 100 1"
     echo "$cmd" >> $run_log
-    $cmd > $tmp_file
-    if [ "$?" != "0" ];	then
+    $cmd > $tmp_file 2>&1
+    if [ "$?" != "0" ]; then
         fail=$(( fail + 1 ))
         result_log=FAIL
         # echo message to stderr
